@@ -16,7 +16,7 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#005557">
-  <meta name="author" content="John Doe">
+  <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
     <meta property="og:type" content="website">
@@ -24,7 +24,7 @@
 <meta property="og:url" content="http://example.com/links/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:locale" content="en_US">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="Baymax">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -275,6 +275,50 @@
 </div>
 
 
+
+
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"Baymax-Fools/Baymax-Fools.github.io","repo-id":"R_kgDORM8YpA","category":"Q&A","category-id":"DIC_kwDORM8YpM4C2xQH","mapping":"pathname","strict":1,"reactions-enabled":1,"emit-metadata":0,"input-position":"top","theme":"preferred_color_scheme","lang":"zh-CN"};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
 
 
 
