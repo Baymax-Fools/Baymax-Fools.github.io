@@ -27,7 +27,7 @@
 <meta property="og:description" content="MT19937伪随机大佬博客：MT19937_mt19937predictor-CSDN博客 1、原理：梅森旋转算法，该算法生成的随机数有周期性1234567891011121314151617181920212223242526272829random.seed(1)print(hex(random.getrandbits(32))[2:])#getrandbits(a)是生成a位二进制的随机数">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-02-19T07:39:07.000Z">
-<meta property="article:modified_time" content="2026-02-19T07:48:12.043Z">
+<meta property="article:modified_time" content="2026-03-10T14:53:20.498Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -344,7 +344,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>February 19, 2026</div>
+          <div>March 10, 2026</div>
         </div>
       
       
@@ -487,6 +487,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -679,6 +685,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
