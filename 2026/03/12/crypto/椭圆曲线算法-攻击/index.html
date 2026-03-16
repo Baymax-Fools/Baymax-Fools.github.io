@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/images/crypto/%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E7%AE%97%E6%B3%95-%E6%94%BB%E5%87%BB/1.png">
 <meta property="article:published_time" content="2026-03-12T04:40:19.000Z">
-<meta property="article:modified_time" content="2026-03-12T05:03:31.610Z">
+<meta property="article:modified_time" content="2026-03-16T06:04:37.316Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -225,7 +225,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.7k words
+          5.9k words
         
       </span>
     
@@ -236,7 +236,7 @@
         
         
         
-          48 mins
+          50 mins
         
       </span>
     
@@ -282,6 +282,7 @@
 <hr>
 <p><strong>算法基础过程：</strong><br>    1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2&#x3D;x^3+ax+b$），取曲线上一点<code>P</code>，作为基点<br>    2、随机选定一个数<code>k</code>作为私钥，并生成公钥<code>Q = k * P</code>（这里的乘法是曲线上的乘法，不是正常的代数乘法）<br>    3、<strong>加密</strong>：选取一个随机数<code>r</code>，明文为<code>m</code>，用下面的公式生成密文 <code>c</code>，<br>    加密公式：$c&#x3D;(rP,m+rQ)$<br>    4、<strong>解密</strong>：$m+rQ-k(rP)$ <strong>&#x3D;</strong> $m+r(kP)-k(rP)$ <strong>&#x3D;</strong> $m$ </p>
 <hr>
+<p>基础（相关公式）：<br>有限域GF(p)上的椭圆曲线 $y^2&#x3D;x^3+ax+b$ ,$R &#x3D; P + Q$ :<br>$X_r​&#x3D;(λ^2−X_p​−X_q​)\mod p$<br>$Y_r​&#x3D;(λ(X_p​−X_r​)−Y_p​) \mod p$<br>$λ&#x3D;(Y_q​−Y_p​)&#x2F;(X_q​−X_p​) \mod p$  (若p!&#x3D;Q)<br>$λ&#x3D;(3X_p^2​+a)&#x2F;2Y_p​\mod p$  (若P&#x3D;Q)</p>
 <h1 id="椭圆曲线常用攻击方法"><a href="#椭圆曲线常用攻击方法" class="headerlink" title="椭圆曲线常用攻击方法"></a>椭圆曲线常用攻击方法</h1><h2 id="1、smart’s-Attack"><a href="#1、smart’s-Attack" class="headerlink" title="1、smart’s Attack"></a>1、smart’s Attack</h2><p><strong>原理：攻击异常曲线（阶就等于p的曲线，本身就是个异常子群），smart‘s 攻击利用了椭圆曲线上的点可以通过一个同态映射（有限域同态映射）映射到有限域的模数p的加法群上<br>在加法群上解ECDLP会简单一点</strong></p>
 <p><strong>椭圆曲线的 p-adic 提升与形式群映射:</strong></p>
 <p>椭圆曲线点 $P \in E(\mathbb{F}_p)$</p>
@@ -368,7 +369,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>March 12, 2026</div>
+          <div>March 16, 2026</div>
         </div>
       
       
