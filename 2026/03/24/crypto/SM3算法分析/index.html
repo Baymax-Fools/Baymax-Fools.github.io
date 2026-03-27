@@ -19,23 +19,25 @@
   <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
-    <meta name="description" content="注：本blog参考《SM3密码杂凑算法》(GB&#x2F;T 32905-2016)与python开源库gmssl中的sm3算法实现 算法基本信息SM3是一种杂凑算法（就是一种哈希算法，类似SHA-256、MD5等等）输入长度：小于$2^{64}$（理论）输出长度：256bitsm3对明文的填充是比较有特点的 填充长度l的明文m，填充如下：    1.先加一比特1    2.在1后加k个0，使明文">
+    <meta name="description" content="注：本blog参考《SM3密码杂凑算法》(GB&#x2F;T 32905-2016)与python开源库gmssl中的sm3算法实现 算法基本信息SM3是一种杂凑算法（就是一种哈希算法，类似SHA-256、MD5等等）输入长度：小于$2^{64}$（理论）输出长度：256bitsm3对明文的填充是比较有特点的 填充长度l的明文m，填充如下：	1.先加一比特1	2.在1后加k个0，使明文长度为$(l">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SM3算法分析（国密学习计划 2&#x2F;5）">
+<meta property="og:title" content="SM3算法分析（国密学习 2&#x2F;5）">
 <meta property="og:url" content="http://example.com/2026/03/24/crypto/SM3%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Baymax&#39; blogs">
-<meta property="og:description" content="注：本blog参考《SM3密码杂凑算法》(GB&#x2F;T 32905-2016)与python开源库gmssl中的sm3算法实现 算法基本信息SM3是一种杂凑算法（就是一种哈希算法，类似SHA-256、MD5等等）输入长度：小于$2^{64}$（理论）输出长度：256bitsm3对明文的填充是比较有特点的 填充长度l的明文m，填充如下：    1.先加一比特1    2.在1后加k个0，使明文">
+<meta property="og:description" content="注：本blog参考《SM3密码杂凑算法》(GB&#x2F;T 32905-2016)与python开源库gmssl中的sm3算法实现 算法基本信息SM3是一种杂凑算法（就是一种哈希算法，类似SHA-256、MD5等等）输入长度：小于$2^{64}$（理论）输出长度：256bitsm3对明文的填充是比较有特点的 填充长度l的明文m，填充如下：	1.先加一比特1	2.在1后加k个0，使明文长度为$(l">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/crypto/SM3%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1.png">
 <meta property="article:published_time" content="2026-03-24T12:16:40.000Z">
-<meta property="article:modified_time" content="2026-03-26T09:13:11.266Z">
+<meta property="article:modified_time" content="2026-03-27T07:13:32.693Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta property="article:tag" content="国密">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/images/crypto/SM3%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1.png">
   
   
   
-  <title>SM3算法分析（国密学习计划 2/5） - Baymax&#39; blogs</title>
+  <title>SM3算法分析（国密学习 2/5） - Baymax&#39; blogs</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -201,7 +203,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="SM3算法分析（国密学习计划 2/5）"></span>
+            <span id="subtitle" data-typed-text="SM3算法分析（国密学习 2/5）"></span>
           
         </div>
 
@@ -224,7 +226,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.1k words
+          5.5k words
         
       </span>
     
@@ -235,7 +237,7 @@
         
         
         
-          18 mins
+          46 mins
         
       </span>
     
@@ -272,26 +274,50 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">SM3算法分析（国密学习计划 2/5）</h1>
+            <h1 id="seo-header">SM3算法分析（国密学习 2/5）</h1>
             
             
               <div class="markdown-body">
                 
                 <p>注：本blog参考《SM3密码杂凑算法》(GB&#x2F;T 32905-2016)与python开源库gmssl中的sm3算法实现</p>
 <h1 id="算法基本信息"><a href="#算法基本信息" class="headerlink" title="算法基本信息"></a>算法基本信息</h1><p><strong>SM3是一种杂凑算法（就是一种哈希算法，类似SHA-256、MD5等等）</strong><br><strong>输入长度：小于$2^{64}$（理论）</strong><br><strong>输出长度：256bit</strong><br><strong>sm3对明文的填充是比较有特点的</strong></p>
-<h1 id="填充"><a href="#填充" class="headerlink" title="填充"></a>填充</h1><p><strong>长度<code>l</code>的明文<code>m</code>，填充如下：</strong><br>    1.先加一比特<code>1</code><br>    2.在<code>1</code>后加<code>k</code>个<code>0</code>，使明文长度为$(l + 1 + k) &#x3D; 448 \mod 512$<br>    3.再加上一个64位比特串，这个比特串就是长度<code>l</code>的二进制表示（这里就能看出为什么sm3的理论输入长度要小于$2^{64}$）</p>
+<h1 id="填充"><a href="#填充" class="headerlink" title="填充"></a>填充</h1><p><strong>长度<code>l</code>的明文<code>m</code>，填充如下：</strong><br>	1.先加一比特<code>1</code><br>	2.在<code>1</code>后加<code>k</code>个<code>0</code>，使明文长度为$(l + 1 + k) &#x3D; 448 \mod 512$<br>	3.再加上一个64位比特串，这个比特串就是长度<code>l</code>的二进制表示（这里就能看出为什么sm3的理论输入长度要小于$2^{64}$）</p>
 <p><strong>填充后的明文长度是512的倍数，后经迭代压缩，输出256bit的杂凑值</strong><br><strong>下面是gmssl库中的实现，注意一下，py中没办法一比特一比特填充，只能填充字节($1byte &#x3D; 8bit$)，所以实现起来会麻烦一点</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs gmssl">def sm3_hash(msg):  <br>    # print(msg)  <br>    len1 = len(msg)     # 计算msg的字节长  <br>    reserve1 = len1 % 64    # 计算余数  <br>    <br>    msg.append(0x80)    # 在msg后加上&#x27;0b10000000&#x27;  <br>    # 这里有可能会产生一个问题，就是直接填充一个字节，如果要填充的k小于7的话，  <br>    # 即 ( l + 1 ) % 512 &gt; 448 ，不会产生影响吗：  <br>    # 实际上，并不会有任何影响。  <br>    # 因为消息msg是以字节的形式传入的，说明msg的bit位长度一定是8的倍数，  <br>    # 如果是 448 长度的话，加上 1 就是449，需要填充一个模长  <br>    # 最接近的是 440 长度的，k = (448 - (l+1)） = 7 % 512，刚好就是0x80中的后面七个&#x27;0&#x27;  <br>    # 注：其实k的长度是能求出： k = 7 % 8    <br>    <br>    reserve1 = reserve1 + 1 # 余数加上0x80这一个字节    <br>    range_end = 56  # 剩下的8字节留给长度  <br>    if reserve1 &gt; range_end:    # 如果成立，说明要填充一整个模长（512bit）  <br>        range_end = range_end + 64  <br>  <br>    for i in range(reserve1, range_end):    # 填充字节  <br>        msg.append(0x00)  <br>  <br>    bit_length = (len1) * 8 # 转换为比特数  <br>    bit_length_str = [bit_length % 0x100]   # 取最低8位  <br>    for i in range(7):  <br>        bit_length = int(bit_length / 0x100)  <br>        bit_length_str.append(bit_length % 0x100)   # 依次取更高8位  <br>    for i in range(8):  <br>        msg.append(bit_length_str[7-i])<br></code></pre></td></tr></table></figure>
 <h1 id="定义函数"><a href="#定义函数" class="headerlink" title="定义函数"></a>定义函数</h1><p><strong>指的是在下面的迭代压缩中会出现的函数（在GB&#x2F;T标准中定义好的）</strong><br><strong>有俩个布尔函数和俩个置换函数</strong></p>
 <p>$\land$ : <code>32bit</code>与运算<br>$\lor$：<code>32bit</code>或运算<br>$\oplus$：<code>32bit</code>异或运算<br>$\lnot$：<code>32bit</code>非运算</p>
-<h2 id="布尔函数"><a href="#布尔函数" class="headerlink" title="布尔函数"></a>布尔函数</h2><p><strong>(1)</strong>$$<br>FF_j(X, Y, Z) &#x3D; \begin{cases}<br>X \oplus Y \oplus Z &amp; 0 \leqslant j \leqslant 15 \<br>(X \land Y) \lor (X \land Z) \lor (Y \land Z) &amp; 16 \leqslant j \leqslant 63<br>\end{cases}<br>$$</p>
+<h2 id="布尔函数"><a href="#布尔函数" class="headerlink" title="布尔函数"></a>布尔函数</h2><p><strong>(1)</strong><br>$0 \leqslant j \leqslant 15$<strong>时:</strong>$FF_j(X,Y,Z) &#x3D; X \oplus Y \oplus Z$<br>$16 \leqslant j \leqslant 63$<strong>时:</strong>$FF_j(X,Y,Z) &#x3D; (X \land Y) \lor (X \land Z) \lor (Y \land Z)$  </p>
 <hr>
-<p><strong>(2)</strong>$$GG_j(X, Y, Z) &#x3D; \begin{cases}<br>X \oplus Y \oplus Z &amp; 0 \leqslant j \leqslant 15 \<br>(X \land Y) \lor (\lnot X \land Z) &amp; 16 \leqslant j \leqslant 63<br>\end{cases}$$<br>其中X，Y，Z为字</p>
+<p><strong>(2)</strong><br>$0 \leqslant j \leqslant 15$<strong>时:</strong>$GG_j(X,Y,Z) &#x3D; X \oplus Y \oplus Z$<br>$16 \leqslant j \leqslant 63$<strong>时:</strong>$GG_j(X,Y,Z) &#x3D; (X \land Y) \lor (\lnot X \land Z)$    </p>
+<hr>
+<p>其中 $X$，$Y$，$Z$ 为字</p>
 <h2 id="置换函数"><a href="#置换函数" class="headerlink" title="置换函数"></a>置换函数</h2><p><strong>（1）</strong>$$P_0(X) &#x3D; X \oplus (X &lt;&lt;&lt;9) \oplus (X&lt;&lt;&lt;17)<br>$$</p>
 <hr>
-<p><strong>(2)</strong>$$P_1(X) &#x3D; X \oplus (X&lt;&lt;&lt;15) \oplus(X&lt;&lt;&lt;23)<br>$$<br>其中X为字</p>
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p><strong>没什么特别的地方</strong></p>
+<p><strong>(2)</strong>$$P_1(X) &#x3D; X \oplus (X&lt;&lt;&lt;15) \oplus(X&lt;&lt;&lt;23)<br>$$<br>其中<code>X</code>为字</p>
+<p><strong>代码实现：</strong></p>
+<p><strong>没什么特别的地方</strong></p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs gmssl">def sm3_ff_j(x, y, z, j):  <br>    if 0 &lt;= j and j &lt; 16:  <br>        ret = x ^ y ^ z  <br>    elif 16 &lt;= j and j &lt; 64:  <br>        ret = (x &amp; y) | (x &amp; z) | (y &amp; z)  <br>    return ret  <br>  <br>def sm3_gg_j(x, y, z, j):  <br>    if 0 &lt;= j and j &lt; 16:  <br>        ret = x ^ y ^ z  <br>    elif 16 &lt;= j and j &lt; 64:  <br>        #ret = (X | Y) &amp; ((2 ** 32 - 1 - X) | Z)  <br>        ret = (x &amp; y) | ((~ x) &amp; z)  <br>    return ret  <br>  <br>def sm3_p_0(x):  <br>    return x ^ (rotl(x, 9 % 32)) ^ (rotl(x, 17 % 32))  <br>  <br>def sm3_p_1(x):  <br>    return x ^ (rotl(x, 15 % 32)) ^ (rotl(x, 23 % 32))<br></code></pre></td></tr></table></figure>
+<h2 id="压缩函数"><a href="#压缩函数" class="headerlink" title="压缩函数"></a>压缩函数</h2><p>注：在sm3中，要进行压缩函数的运算前是要先对消息进行扩展的，这里先说压缩函数，消息扩展在后面。</p>
+<p>定义：<br><code>&lt;-</code>是左向赋值<br><code>W</code>为字（32比特串）<br><code>A、B、C、D、E、F、G、H</code>为字寄存器<br><code>SS1、SS2、TT1、TT2</code>为中间变量<br>$V^0$ 为<code>256bit</code>初始值IV，$V^n$为迭代压缩结果，$B^i$为明文分组<br>$T_i$ 是算法定义好的值（随i值的变化而变化）<br><strong>压缩函数：</strong>$V^{i+1}&#x3D;CF(V^i,B^i)$</p>
+<p><strong>过程：</strong><br>将$V^i$存入<code>ABCDEFGH</code>后进入循环<br><img src="/../../images/crypto/SM3%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/1.png" srcset="/img/loading.gif" lazyload><br><strong>可能看着有点乱，可以看代码实现来辅助理解</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs gmssl">T_j = [  <br>    2043430169, 2043430169, 2043430169, 2043430169, 2043430169, 2043430169,  <br>    2043430169, 2043430169, 2043430169, 2043430169, 2043430169, 2043430169,  <br>    2043430169, 2043430169, 2043430169, 2043430169, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042, 2055708042, 2055708042,  <br>    2055708042, 2055708042, 2055708042, 2055708042  <br>]<br># 前16是一个值，其他是一个值<br>###########################################################################<br><br>a, b, c, d, e, f, g, h = v_i  <br>  <br>for j in range(0, 64):  <br>    ss_1 = rotl(  <br>        ((rotl(a, 12 % 32)) +  <br>        e +  <br>        (rotl(T_j[j], j % 32))) &amp; 0xffffffff, 7 % 32  <br>    )  <br>    <br>    # w和w_1是消息扩展数组，文章后面会讲<br>    ss_2 = ss_1 ^ (rotl(a, 12 % 32))  <br>    tt_1 = (sm3_ff_j(a, b, c, j) + d + ss_2 + w_1[j]) &amp; 0xffffffff  <br>    tt_2 = (sm3_gg_j(e, f, g, j) + h + ss_1 + w[j]) &amp; 0xffffffff  <br>    d = c  <br>    c = rotl(b, 9 % 32)  <br>    b = a  <br>    a = tt_1  <br>    h = g  <br>    g = rotl(f, 19 % 32)  <br>    f = e  <br>    e = sm3_p_0(tt_2)  <br>  <br>    a, b, c, d, e, f, g, h = map(  <br>        lambda x:x &amp; 0xFFFFFFFF ,[a, b, c, d, e, f, g, h])  <br>    # 将各个字寄存器保留低32位后保存  <br>  <br>v_j = [a, b, c, d, e, f, g, h]  <br>return [v_j[i] ^ v_i[i] for i in range(8)]<br></code></pre></td></tr></table></figure>
+
+<h1 id="迭代压缩"><a href="#迭代压缩" class="headerlink" title="迭代压缩"></a>迭代压缩</h1><h2 id="第一步：消息填充"><a href="#第一步：消息填充" class="headerlink" title="第一步：消息填充"></a>第一步：消息填充</h2><p>对消息填充后按512比特分组：$m’&#x3D;B^0B^1…B^{n-1}$，其中$n &#x3D; (l+k+65)&#x2F;512$</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gmssl">group_count = round(len(msg) / 64)  <br>  <br>B = []  <br>for i in range(0, group_count):  <br>    B.append(msg[i*64:(i+1)*64])  # 同样因为py中是以字节为一个单位的（8*64）<br></code></pre></td></tr></table></figure>
+<h2 id="第二步：消息扩展"><a href="#第二步：消息扩展" class="headerlink" title="第二步：消息扩展"></a>第二步：消息扩展</h2><p>将 $B^i$ 扩展成132个消息字 $W_0,W_1,…,W_{67}$,$W’_0, W’<em>1,…, W’</em>{63}$ ，后会用在压缩函数里。</p>
+<p>先将消息分组 $B^i$ 划分成16个字$W_0,W_1,…,W_{15}$，后经过下面俩个循环扩展。</p>
+<p><strong>FOR</strong> j &#x3D; 16 <strong>TO</strong> 67<br>	$W_i$ &lt;- $P_1(W_{i-16}\oplus W_{i-9} \oplus (W_{i-3} &lt;&lt;&lt; 15))\oplus (W_{i-13}&lt;&lt;&lt; 7)\oplus W_{i-6}$<br><strong>ENDFOR</strong></p>
+<hr>
+<p><strong>FOR</strong> j &#x3D; 0 <strong>TO</strong> 63<br>	$W’<em>i$ &#x3D; $W_i\oplus W</em>{i+4}$<br><strong>ENDFOR</strong></p>
+<p>成功将消息扩展成132个消息字</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs gmssl">w = []  <br>for i in range(16):  # 处理16个字  <br>    weight = 0x1000000  # 初始权重，用于按字节组合成32位字  <br>    data = 0  # 临时存储组合成的32位字  <br>    # 每4个字节组成一个字（大端序）  <br>    for k in range(i * 4, (i + 1) * 4):  # 遍历当前字的4个字节  <br>        data = data + b_i[k] * weight  # 将字节放到对应位置  <br>        weight = int(weight / 0x100)  # 权重右移8位（除以256）  <br>    w.append(data)  # 添加第i个字到w[0..15]  <br>  <br>for j in range(16, 68):  # 生成第16到第67个字  <br>    w.append(0)  # 为了下行数组的索引安全，先添加占位元素  <br>    w[j] = sm3_p_1(w[j - 16] ^ w[j - 9] ^ (rotl(w[j - 3], 15 % 32))) ^ (rotl(w[j - 13], 7 % 32)) ^ w[j - 6]  <br>    str1 = &quot;%08x&quot; % w[j]  # 转换为十六进制字符串（可用于调试）  <br>  <br>w_1 = []    <br>for j in range(0, 64):  # 生成64个W&#x27;字  <br>    w_1.append(0)  # 与上个循环同理  <br>    w_1[j] = w[j] ^ w[j + 4]  <br>    str1 = &quot;%08x&quot; % w_1[j]<br></code></pre></td></tr></table></figure>
+
+<h2 id="第三步：迭代"><a href="#第三步：迭代" class="headerlink" title="第三步：迭代"></a>第三步：迭代</h2><p><strong>对$m’$进行迭代：</strong><br>	<strong>FOR</strong> i &#x3D; 0 <strong>TO</strong> n-1<br>		$V^{i+1} &#x3D; CF(V^i,B^i)$<br>	<strong>ENDFOR</strong><br>	<br>$V^0$ 为<code>256bit</code>初始值IV，$V^n$为迭代压缩结果<br>迭代完成输出256比特杂凑值：$y &#x3D; ABCDEFGH$ &lt;- $V^n$ </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs gmssl">V = []  <br>V.append(IV)  <br>for i in range(0, group_count):  <br>    V.append(sm3_cf(V[i], B[i]))  <br>  <br>y = V[i+1]  <br>result = &quot;&quot;  <br>for i in y:  <br>    result = &#x27;%s%08x&#x27; % (result, i)  <br>return result<br></code></pre></td></tr></table></figure>
+
+<p>注：本文的gmssl代码演示，因展示顺序可能导致有函数被拆成几部分，详细请看gmssl库源码</p>
+<h1 id="密钥派生函数"><a href="#密钥派生函数" class="headerlink" title="密钥派生函数"></a>密钥派生函数</h1><p><strong>gmssl中还实现用sm3来实现的密钥派生函数</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs gmssl"># 密钥派生函数  <br>def sm3_kdf(z, klen): # z为16进制表示的比特串（str），klen为密钥长度（单位byte）  <br>    klen = int(klen)  <br>    ct = 0x00000001  <br>    rcnt = ceil(klen/32)  <br>    zin = [i for i in bytes.fromhex(z.decode(&#x27;utf8&#x27;))]  <br>    ha = &quot;&quot;  <br>    for i in range(rcnt):  <br>        msg = zin  + [i for i in binascii.a2b_hex((&#x27;%08x&#x27; % ct).encode(&#x27;utf8&#x27;))]  <br>        ha = ha + sm3_hash(msg)  <br>        ct += 1  <br>    return ha[0: klen * 2]<br></code></pre></td></tr></table></figure>
                 
               </div>
             
@@ -317,7 +343,7 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>SM3算法分析（国密学习计划 2/5）</div>
+      <div>SM3算法分析（国密学习 2/5）</div>
       <div>http://example.com/2026/03/24/crypto/SM3算法分析/</div>
     </div>
     <div class="license-meta">
@@ -336,7 +362,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>March 26, 2026</div>
+          <div>March 27, 2026</div>
         </div>
       
       
@@ -371,8 +397,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/03/21/crypto/SM4%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" title="SM4算法分析（国密学习计划 1/5）">
-                        <span class="hidden-mobile">SM4算法分析（国密学习计划 1/5）</span>
+                      <a href="/2026/03/21/crypto/SM4%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/" title="SM4算法分析（国密学习 1/5）">
+                        <span class="hidden-mobile">SM4算法分析（国密学习 1/5）</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
