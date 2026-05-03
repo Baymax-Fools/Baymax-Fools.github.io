@@ -19,15 +19,15 @@
   <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
-    <meta name="description" content="注：源码来自北京大学gmssl库的zuc.h(GmSSL&#x2F;include&#x2F;gmssl&#x2F;zuc.h at master · guanzhi&#x2F;GmSSL) 算法基本信息可分为ZUC-128、ZUC-256  ZUC-128	密钥长度：128bit	iv长度：128bit  ZUC-256	密钥长度：256bit	iv长度：根据具体的加密保护场景，可分为：184b">
+    <meta name="description" content="注：源码为本人手搓(ai辅助)，如有漏洞请轻点喷 XD 算法基本信息可分为ZUC-128、ZUC-256  ZUC-128	密钥长度：128bit	iv长度：128bit  ZUC-256	密钥长度：256bit	iv长度：根据具体的加密保护场景，可分为：184bit(23字节)、200bit(25字节)或规范性补充中的128bit(16字节) 算法结构由线性反馈寄存器（LFSR）、比特重组（BR">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ZUC算法分析（国密学习 3&#x2F;5）">
 <meta property="og:url" content="http://example.com/2026/04/14/crypto/ZUC%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Baymax&#39; blogs">
-<meta property="og:description" content="注：源码来自北京大学gmssl库的zuc.h(GmSSL&#x2F;include&#x2F;gmssl&#x2F;zuc.h at master · guanzhi&#x2F;GmSSL) 算法基本信息可分为ZUC-128、ZUC-256  ZUC-128	密钥长度：128bit	iv长度：128bit  ZUC-256	密钥长度：256bit	iv长度：根据具体的加密保护场景，可分为：184b">
+<meta property="og:description" content="注：源码为本人手搓(ai辅助)，如有漏洞请轻点喷 XD 算法基本信息可分为ZUC-128、ZUC-256  ZUC-128	密钥长度：128bit	iv长度：128bit  ZUC-256	密钥长度：256bit	iv长度：根据具体的加密保护场景，可分为：184bit(23字节)、200bit(25字节)或规范性补充中的128bit(16字节) 算法结构由线性反馈寄存器（LFSR）、比特重组（BR">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-04-14T08:47:30.000Z">
-<meta property="article:modified_time" content="2026-04-15T07:05:41.903Z">
+<meta property="article:modified_time" content="2026-05-03T10:09:56.172Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta property="article:tag" content="国密">
@@ -228,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          367 words
+          1.1k words
         
       </span>
     
@@ -239,7 +239,7 @@
         
         
         
-          4 mins
+          9 mins
         
       </span>
     
@@ -281,7 +281,7 @@
             
               <div class="markdown-body">
                 
-                <p>注：源码来自北京大学gmssl库的zuc.h(<a target="_blank" rel="noopener" href="https://github.com/guanzhi/GmSSL/blob/master/include/gmssl/zuc.h">GmSSL&#x2F;include&#x2F;gmssl&#x2F;zuc.h at master · guanzhi&#x2F;GmSSL</a>)</p>
+                <p>注：源码为本人手搓(<code>ai</code>辅助)，如有漏洞请轻点喷 <code>XD</code></p>
 <h1 id="算法基本信息"><a href="#算法基本信息" class="headerlink" title="算法基本信息"></a>算法基本信息</h1><p>可分为<strong>ZUC-128、ZUC-256</strong></p>
 <hr>
 <p>ZUC-128<br>	密钥长度：<strong>128bit</strong><br>	iv长度：<strong>128bit</strong></p>
@@ -289,7 +289,16 @@
 <p>ZUC-256<br>	密钥长度：<strong>256bit</strong><br>	iv长度：根据具体的加密保护场景，可分为：<strong>184bit</strong>(23字节)、<strong>200bit</strong>(25字节)或规范性补充中的<strong>128bit</strong>(16字节)</p>
 <h2 id="算法结构"><a href="#算法结构" class="headerlink" title="算法结构"></a>算法结构</h2><p>由线性反馈寄存器（LFSR）、比特重组（BR）和非线性函数F组成。<br>如图：<br>![[Pasted image 20260414165306.png]]</p>
 <h1 id="LFSR"><a href="#LFSR" class="headerlink" title="LFSR"></a>LFSR</h1><p>基础信息：<br>	包括16个31比特寄存器单元变量$s_0,s_1,…,s_15$<br>	俩种模式：初始化模式、工作模式</p>
-<h2 id="初始化模式"><a href="#初始化模式" class="headerlink" title="初始化模式"></a>初始化模式</h2><h2 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h2>
+<h2 id="初始化模式"><a href="#初始化模式" class="headerlink" title="初始化模式"></a>初始化模式</h2><p><code>LFSR</code>接收1个31比特字<code>u</code>的输入，对寄存器单元变$s_0,s_1,…,s_{15}$进行更新，计算如下：</p>
+<p>![[Pasted image 20260503164907.png]]</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">def</span> LFSRWithInitialisationMode(u):<br>    <span class="hljs-attribute">v</span> = <span class="hljs-number">2</span>**<span class="hljs-number">15</span>*s[<span class="hljs-number">15</span>]+<span class="hljs-number">2</span>**<span class="hljs-number">17</span>*s[<span class="hljs-number">13</span>]+<span class="hljs-number">2</span>**<span class="hljs-number">21</span>*s[<span class="hljs-number">10</span>]+<span class="hljs-number">2</span>**<span class="hljs-number">20</span>*s[<span class="hljs-number">4</span>]+(<span class="hljs-number">1</span>+<span class="hljs-number">2</span>**<span class="hljs-number">8</span>)*s[<span class="hljs-number">0</span>] % (<span class="hljs-number">2</span>**<span class="hljs-number">31</span>-<span class="hljs-number">1</span>)<br>    <span class="hljs-attribute">s</span>.append((v+u) % (<span class="hljs-number">2</span>**<span class="hljs-number">31</span>-<span class="hljs-number">1</span>))<br>    <span class="hljs-attribute">if</span> s[<span class="hljs-number">16</span>] == <span class="hljs-number">0</span>:<br>        <span class="hljs-attribute">s</span>[<span class="hljs-number">16</span>] = <span class="hljs-number">2</span>**<span class="hljs-number">31</span>-<span class="hljs-number">1</span><br>    <span class="hljs-attribute">s</span>.pop(<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+
+<h2 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h2><p>![[Pasted image 20260503173340.png]]</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">def</span> LFSRWithWorkMode():<br>    <span class="hljs-attribute">s</span>[<span class="hljs-number">16</span>] = (<span class="hljs-number">2</span>**<span class="hljs-number">15</span>*s[<span class="hljs-number">15</span>]+<span class="hljs-number">2</span>**<span class="hljs-number">17</span>*s[<span class="hljs-number">13</span>]+<span class="hljs-number">2</span>**<span class="hljs-number">21</span>*s[<span class="hljs-number">10</span>]+<span class="hljs-number">2</span>**<span class="hljs-number">20</span>*s[<span class="hljs-number">4</span>]+(<span class="hljs-number">1</span>+<span class="hljs-number">2</span>**<span class="hljs-number">8</span>)*s[<span class="hljs-number">0</span>]) % (<span class="hljs-number">2</span>**<span class="hljs-number">31</span>-<span class="hljs-number">1</span>)<br>    <span class="hljs-attribute">if</span> s[<span class="hljs-number">16</span>] == <span class="hljs-number">0</span>:<br>        <span class="hljs-attribute">s</span>[<span class="hljs-number">16</span>] = <span class="hljs-number">2</span>**<span class="hljs-number">31</span>-<span class="hljs-number">1</span><br>    <span class="hljs-attribute">s</span>.pop(<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+
+<h1 id="比特重组-BR"><a href="#比特重组-BR" class="headerlink" title="比特重组 BR"></a>比特重组 BR</h1><p>输入：<code>LFSR</code>寄存器单元变量$s_0,s_2,s_5,s_7,s_9,s_11,s_14,s_15$<br>输出：4个32比特字$X_0、X_1、X_2、X_3$</p>
+<p>计算过程：<br>	1.$s_{15}$高16位 || $s_{14}$低16位 -&gt; $X_0$<br>	2.$s_{11}$低16位 || $s_{9}$高16位拼接-&gt;$X_1$<br>	3.$s_{7}$低16位 || $s_{5}$高16位拼接-&gt;$X_2$<br>	4.$s_{2}$低16位 || $s_{0}$高16位拼接-&gt;$X_3$<br>	注：|| 是指左边和右边直接拼接在一起（注意不要被高位和低位混淆了，是直接拼在一起，例如：第二步中$s_{11}$取的是低16位，但是它拼接后是$X_1$的高16位）</p>
+
                 
               </div>
             
@@ -334,7 +343,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>April 15, 2026</div>
+          <div>May 3, 2026</div>
         </div>
       
       
