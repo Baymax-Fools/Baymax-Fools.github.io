@@ -19,15 +19,15 @@
   <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
-    <meta name="description" content="最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 XD 基础知识这里的基础知识是有关计算机网络的 OSI模型OSI七层模型是最经典的模型，将通信系统中的数据流分为七层每一个中间层为其上一层提供功能，其自身功能则由其下一层提供  物理层 数据链路层：Ethernet、MAC等 网络层：IP（IPv4&#x2F;IPv6）、ICMP等 传输层：TCP、UDP等 会话层：RPC、Net">
+    <meta name="description" content="最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 XD 基础知识密码协议，也称安全协议、加密协议 按安全协议定义： 密钥交换协议、认证协议、认证和密钥交换协议。  按安全协议实现的功能： 认证协议、最小泄密协议、不可否认协议、公平性协议、身份识别协议、密钥管理协议。  下面的知识是有关计算机网络的 OSI模型OSI七层模型是最经典的模型，将通信系统中的数据流分为七层每一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="综合密码协议学习">
-<meta property="og:url" content="http://example.com/2026/05/07/crypto/%E7%BB%BC%E5%90%88%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:url" content="http://example.com/2026/05/07/crypto/%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Baymax&#39; blogs">
-<meta property="og:description" content="最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 XD 基础知识这里的基础知识是有关计算机网络的 OSI模型OSI七层模型是最经典的模型，将通信系统中的数据流分为七层每一个中间层为其上一层提供功能，其自身功能则由其下一层提供  物理层 数据链路层：Ethernet、MAC等 网络层：IP（IPv4&#x2F;IPv6）、ICMP等 传输层：TCP、UDP等 会话层：RPC、Net">
+<meta property="og:description" content="最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 XD 基础知识密码协议，也称安全协议、加密协议 按安全协议定义： 密钥交换协议、认证协议、认证和密钥交换协议。  按安全协议实现的功能： 认证协议、最小泄密协议、不可否认协议、公平性协议、身份识别协议、密钥管理协议。  下面的知识是有关计算机网络的 OSI模型OSI七层模型是最经典的模型，将通信系统中的数据流分为七层每一">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-05-07T09:54:32.000Z">
-<meta property="article:modified_time" content="2026-05-07T10:22:45.877Z">
+<meta property="article:modified_time" content="2026-05-07T11:57:54.306Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -227,7 +227,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          357 words
+          1.3k words
         
       </span>
     
@@ -238,7 +238,7 @@
         
         
         
-          3 mins
+          12 mins
         
       </span>
     
@@ -281,7 +281,14 @@
               <div class="markdown-body">
                 
                 <p>最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 <code>XD</code></p>
-<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>这里的基础知识是有关计算机网络的</p>
+<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>密码协议，也称安全协议、加密协议</p>
+<pre><code class="hljs">按安全协议定义：
+密钥交换协议、认证协议、认证和密钥交换协议。
+
+按安全协议实现的功能：
+认证协议、最小泄密协议、不可否认协议、公平性协议、身份识别协议、密钥管理协议。
+</code></pre>
+<p>下面的知识是有关计算机网络的</p>
 <h2 id="OSI模型"><a href="#OSI模型" class="headerlink" title="OSI模型"></a>OSI模型</h2><p><code>OSI</code>七层模型是最经典的模型，将通信系统中的数据流分为七层<br><code>每一个中间层为其上一层提供功能，其自身功能则由其下一层提供</code></p>
 <ol>
 <li>物理层</li>
@@ -299,7 +306,31 @@
 <li>传输层：对应<code>OSI</code>中的传输层</li>
 <li>应用层：对应<code>OSI</code>中的应用层+表示层+会话</li>
 </ol>
-<h1 id="IPSec协议"><a href="#IPSec协议" class="headerlink" title="IPSec协议"></a>IPSec协议</h1>
+<h1 id="IPSec协议"><a href="#IPSec协议" class="headerlink" title="IPSec协议"></a>IPSec协议</h1><p>注：工作在<code>OSI</code>模型的第三层（网络层）</p>
+<p>IPSec协议不是具体的一个协议，它指的是一组基于网络层的安全通信协议族（应用密码学）<br>设计思想：将基于密码技术的安全机制引入IP协议（IPv4、IPv6），实现网络层的通信安全</p>
+<p>IPSec协议主要分为</p>
+<ol>
+<li>认证头（AH），为IP数据报提供无连接数据完整性、消息认证以及防重放攻击保护</li>
+<li>封装安全载荷（ESP），提供机密性、数据源认证、无连接完整性、防重放和有限的传输流（traffic-flow）机密性；</li>
+<li>因特网密钥交换（称IKE或IKEv2），为AH、ESP操作所需的安全关联SA（Security Association,安全联盟,博客后面会说））提供算法、数据包和密钥参数</li>
+</ol>
+<p>IPSec协议的俩个环节：<br>第一环节：使用IKE完成通信双方的身份鉴别，确定通信时使用的IPSec安全策略和密钥；<br>第二环节：使用上一环节中协商确定的安全策略和密钥，执行ESP协议，开始通信数据的安全传输。</p>
+<p>借用一下大佬的图（来自<a target="_blank" rel="noopener" href="https://blog.csdn.net/NEUChords/article/details/92968314">https://zhuanlan.zhihu.com/p/488141423</a>）：<br>![[Pasted image 20260507194024.png]]<br>![[Pasted image 20260507194117.png]]</p>
+<p>IPSec协议的俩种模式：</p>
+<ul>
+<li>传输模式：用于端到端应用场景。不改动IP头，只保护IP载荷；</li>
+<li>隧道模式：用于创建<code>VPN</code> (Virtual Private Network,虚拟专用网)。对整个IP报文(包括原先的IP头、IP载荷)提供加密和认证，添加新的IP头。</li>
+</ul>
+<p>原始 IP 包：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">[ IPH ][ Data ]  <br>```  <br>传输模式：    <br>```text  <br>[ IPH ][ IPSec ][ Data ]  <br>```  <br>隧道模式：  <br>```text  <br>[ New IPH ][ IPSec ][ Org IPH ][ Data ]  <br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>IPH</code>：IP Header（IP头）  </li>
+<li><code>IPSec</code>：AH 或 ESP 安全头  </li>
+<li><code>Data</code>：数据载荷</li>
+<li><code>Org IPH</code>：原始IPH</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/NEUChords/article/details/92968314">https://zhuanlan.zhihu.com/p/488141423</a><br><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/IPsec">https://zh.wikipedia.org/wiki/IPsec</a></p>
+
                 
               </div>
             
@@ -324,7 +355,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>综合密码协议学习</div>
-      <div>http://example.com/2026/05/07/crypto/综合密码协议学习/</div>
+      <div>http://example.com/2026/05/07/crypto/密码协议学习/</div>
     </div>
     <div class="license-meta">
       
