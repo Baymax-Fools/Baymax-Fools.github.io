@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>综合密码协议学习</title>
+    <link href="/2026/05/07/crypto/%E7%BB%BC%E5%90%88%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/"/>
+    <url>/2026/05/07/crypto/%E7%BB%BC%E5%90%88%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/</url>
+    
+    <content type="html"><![CDATA[<p>最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 <code>XD</code></p><h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>这里的基础知识是有关计算机网络的</p><h2 id="OSI模型"><a href="#OSI模型" class="headerlink" title="OSI模型"></a>OSI模型</h2><p><code>OSI</code>七层模型是最经典的模型，将通信系统中的数据流分为七层<br><code>每一个中间层为其上一层提供功能，其自身功能则由其下一层提供</code></p><ol><li>物理层</li><li>数据链路层：<code>Ethernet、MAC等</code></li><li>网络层：<code>IP（IPv4/IPv6）、ICMP等</code></li><li>传输层：<code>TCP、UDP等</code></li><li>会话层：<code>RPC、NetBIOS等</code></li><li>表示层：<code>SSL/TLS、JPEG、UTF-8等</code></li><li>应用层：<code>HTTP、HTTPS、FTP、DNS等</code></li></ol><h1 id="TCP-IP模型"><a href="#TCP-IP模型" class="headerlink" title="TCP&#x2F;IP模型"></a>TCP&#x2F;IP模型</h1><p><code>TCP/IP</code>四层模型是实际互联网中比较常用的模型</p><ol><li>网络接口层：对应<code>OSI</code>中的物理层+数据链路层</li><li>网络层：对应<code>OSI</code>中的网络层</li><li>传输层：对应<code>OSI</code>中的传输层</li><li>应用层：对应<code>OSI</code>中的应用层+表示层+会话</li></ol><h1 id="IPSec协议"><a href="#IPSec协议" class="headerlink" title="IPSec协议"></a>IPSec协议</h1>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>crypto</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>UMDCTF 2026 - Crypto</title>
     <link href="/2026/04/27/crypto/UMDCTF%202026%20-%20Crypto/"/>
     <url>/2026/04/27/crypto/UMDCTF%202026%20-%20Crypto/</url>
@@ -88,7 +107,7 @@
     <link href="/2026/04/01/crypto/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/"/>
     <url>/2026/04/01/crypto/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/</url>
     
-    <content type="html"><![CDATA[<h1 id="消息认证码（MAC）"><a href="#消息认证码（MAC）" class="headerlink" title="消息认证码（MAC）"></a>消息认证码（MAC）</h1><p>经过特定算法后产生的一小段信息，检查某段消息的完整性，作为身份验证，确认消息的来源<br>MAC的算法中，通常会使用带密钥的散列函数，或块密码的带认证工作模式</p><p>伽罗瓦消息认证码（GMAC）：是GCM的一种仅用于认证的变体，可以形成增量<strong>消息认证码</strong>。GCM和GMAC都可以接受任意长度的初始化向量</p><h2 id="GCM工作模式"><a href="#GCM工作模式" class="headerlink" title="GCM工作模式"></a>GCM工作模式</h2><p>GCM 全称为 Galois&#x2F;Counter Mode，可以看出 G 是指 GMAC，C 是指 CTR。它在 CTR 加密的基础上增加 GMAC 的特性，解决了 CTR 不能对加密消息进行完整性校验的问题。</p><p>加密：<code>密钥：K、明文：P、初始向量IV、附加数据：AD</code><br>1.用密钥对明文加密得到<code>C</code><br>2.用密文和<code>AD</code>计算得到<code>认证标签T</code><br>解密：<br>1.接收者(有密钥<code>K</code>)接收到<code>AD、C、T</code><br>2.正常解密出<code>P</code><br>3.计算检查<code>T</code>来看密文或者<code>AD</code>有没有被篡改<br>![[photos&#x2F;密码知识杂烩&#x2F;1.png]]<br><img src="/../../images/crypto/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/1.png"></p>]]></content>
+    <content type="html"><![CDATA[<h1 id="消息认证码（MAC）"><a href="#消息认证码（MAC）" class="headerlink" title="消息认证码（MAC）"></a>消息认证码（MAC）</h1><p>经过特定算法后产生的一小段信息，检查某段消息的完整性，作为身份验证，确认消息的来源<br>MAC的算法中，通常会使用带密钥的散列函数，或块密码的带认证工作模式</p><p>伽罗瓦消息认证码（GMAC）：是GCM的一种仅用于认证的变体，可以形成增量<strong>消息认证码</strong>。GCM和GMAC都可以接受任意长度的初始化向量</p><h2 id="GCM工作模式"><a href="#GCM工作模式" class="headerlink" title="GCM工作模式"></a>GCM工作模式</h2><p>GCM 全称为 Galois&#x2F;Counter Mode，可以看出 G 是指 GMAC，C 是指 CTR。它在 CTR 加密的基础上增加 GMAC 的特性，解决了 CTR 不能对加密消息进行完整性校验的问题。</p><p>加密：<code>密钥：K、明文：P、初始向量IV、附加数据：AD</code><br>1.用密钥对明文加密得到<code>C</code><br>2.用密文和<code>AD</code>计算得到<code>认证标签T</code><br>解密：<br>1.接收者(有密钥<code>K</code>)接收到<code>AD、C、T</code><br>2.正常解密出<code>P</code><br>3.计算检查<code>T</code>来看密文或者<code>AD</code>有没有被篡改<br>![[photos&#x2F;密码知识杂烩&#x2F;1.png]]<br><img src="/../../images/crypto/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/1.png"></p><h1 id="综合密码协议"><a href="#综合密码协议" class="headerlink" title="综合密码协议"></a>综合密码协议</h1><h2 id="IPSec-协议"><a href="#IPSec-协议" class="headerlink" title="IPSec 协议"></a>IPSec 协议</h2>]]></content>
     
     
     
