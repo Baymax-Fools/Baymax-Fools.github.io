@@ -27,7 +27,7 @@
 <meta property="og:description" content="最近准备学一下（初步了解）各种协议，因此写了这篇博客，如有出错的地方请轻点喷 XD 基础知识密码协议，也称安全协议、加密协议 按安全协议定义： 密钥交换协议、认证协议、认证和密钥交换协议。  按安全协议实现的功能： 认证协议、最小泄密协议、不可否认协议、公平性协议、身份识别协议、密钥管理协议。  下面的知识是有关计算机网络的 OSI模型OSI七层模型是最经典的模型，将通信系统中的数据流分为七层每一">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-05-07T09:54:32.000Z">
-<meta property="article:modified_time" content="2026-05-07T11:57:54.306Z">
+<meta property="article:modified_time" content="2026-05-07T11:59:53.774Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -238,7 +238,7 @@
         
         
         
-          12 mins
+          11 mins
         
       </span>
     
@@ -321,8 +321,7 @@
 <li>传输模式：用于端到端应用场景。不改动IP头，只保护IP载荷；</li>
 <li>隧道模式：用于创建<code>VPN</code> (Virtual Private Network,虚拟专用网)。对整个IP报文(包括原先的IP头、IP载荷)提供加密和认证，添加新的IP头。</li>
 </ul>
-<p>原始 IP 包：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">[ IPH ][ Data ]  <br>```  <br>传输模式：    <br>```text  <br>[ IPH ][ IPSec ][ Data ]  <br>```  <br>隧道模式：  <br>```text  <br>[ New IPH ][ IPSec ][ Org IPH ][ Data ]  <br></code></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">原始 IP 包：<br>[ IPH ][ Data ]  <br><br>传输模式：    <br>[ IPH ][ IPSec ][ Data ]  <br><br>隧道模式：  <br>[ New IPH ][ IPSec ][ Org IPH ][ Data ]  <br></code></pre></td></tr></table></figure>
 <ul>
 <li><code>IPH</code>：IP Header（IP头）  </li>
 <li><code>IPSec</code>：AH 或 ESP 安全头  </li>
