@@ -27,7 +27,7 @@
 <meta property="og:description" content="素数筛选——Eratosthenes筛法从小素数开始，找到的素数的倍数一定是合数， 1234567891011121314prime &#x3D; []is_prime &#x3D; [False] * Ndef Eratosthenes(n):    is_prime[0] &#x3D; is_prime[1] &#x3D; False    for i in range(2, n + 1):        is_prime[i] &#x3D;">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-04-12T08:35:42.000Z">
-<meta property="article:modified_time" content="2026-04-28T08:04:29.567Z">
+<meta property="article:modified_time" content="2026-05-08T10:00:21.815Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -227,7 +227,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          965 words
+          984 words
         
       </span>
     
@@ -289,6 +289,7 @@
 <p><strong>核</strong>的定义：<br>	设线性化多项式：$L(x)&#x3D;a_0x+a_1x^q+a_2x^{q^2}+…+a_dx^{q^d}$ （向量空间的秩是<code>d</code>）<br>	定义一个映射：$L:$$F_{q^n} -&gt; F_{q^n}$<br>	那么它的<strong>核</strong>是：$ker(L)&#x3D;{x∈F_{q^n}​∣L(x)&#x3D;0}$</p>
 <h1 id="拉格朗日插值多项式"><a href="#拉格朗日插值多项式" class="headerlink" title="拉格朗日插值多项式"></a>拉格朗日插值多项式</h1><p>构造公式：<br>(1)$$<br>P(x) &#x3D; \sum_{i&#x3D;1}^{n} y_i \prod_{\substack{j&#x3D;1 \ j \neq i}}^{n} \frac{x - x_j}{x_i - x_j}<br>$$<br>(2)<br>$$<br>P(x) &#x3D; \sum_{i&#x3D;1}^{n} y_i*L(x),L(x)&#x3D;\prod_{\substack{j&#x3D;1 \ j \neq i}}^{n} \frac{x - x_j}{x_i - x_j}<br>$$</p>
 <p>给定平面上的<code>n</code>个点<code>(x1,y1)(x2,y2)...(xn,yn)</code>（所有x不相同），<strong>拉格朗日插值多项式</strong>是唯一一个次数不超过<code>n-1</code>的多项式<code>P(x)</code>，满足：<br>$$<br>P(x_i)&#x3D;y_i(i&#x3D;1,…,k)<br>$$</p>
+<h1 id="同态"><a href="#同态" class="headerlink" title="同态"></a>同态</h1><p>对于群同态，单位元一定映射到单位元</p>
 
                 
               </div>
@@ -332,7 +333,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>April 28, 2026</div>
+          <div>May 8, 2026</div>
         </div>
       
       
