@@ -23,6 +23,19 @@
   
   
   <entry>
+    <title>你的文章标题</title>
+    <link href="/2026/05/11/crypto/CVE-2023-21563/"/>
+    <url>/2026/05/11/crypto/CVE-2023-21563/</url>
+    
+    <content type="html"><![CDATA[<p><a href="https://blog.syss.com/posts/bitpixie/">https://blog.syss.com/posts/bitpixie/</a><br><a href="https://cn-sec.com/archives/4482579.html">通过 bitpixie 漏洞进行 Windows 本地权限提升 | CN-SEC 中文网</a><br><a href="https://neodyme.io/de/blog/bitlocker_screwed_without_a_screwdriver/">https://neodyme.io/de/blog/bitlocker_screwed_without_a_screwdriver/</a></p><p>漏洞复现过程：</p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>综合密码协议学习</title>
     <link href="/2026/05/07/crypto/%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/"/>
     <url>/2026/05/07/crypto/%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/</url>
