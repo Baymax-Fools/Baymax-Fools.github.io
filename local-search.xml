@@ -4,6 +4,27 @@
   
   
   <entry>
+    <title>SM2算法分析（国密学习 4/5）</title>
+    <link href="/2026/06/12/crypto/SM2%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/"/>
+    <url>/2026/06/12/crypto/SM2%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<p>注：SM2算法中涉及很多椭圆曲线中的运算，在代码实现上看起来有点乱，故在本文中没有具体展示源码（推荐在sagemath中进行椭圆运算）</p><h1 id="算法基本信息"><a href="#算法基本信息" class="headerlink" title="算法基本信息"></a>算法基本信息</h1><p><code>SM2</code>算法是椭圆曲线算法，个人感觉是公开国密中算是比较难和用法较广的算法。</p><p><code>SM2</code>算法主要用在：数字签名算法、密钥交换协议和公钥加密算法，在gb&#x2F;t中分别是32918_2-2016、32918_4-2016、32918_5-2016。</p><p><code>SM2</code>算法是相当于国内的<code>ECC</code>，其中：</p><ol><li>数字签名算法是对标国外的<code>ECDSA</code>签名算法</li><li>密钥交换协议是对标<code>ECDH</code></li><li>公钥加密是对标<code>ECIES</code></li></ol><h1 id="数字签名算法"><a href="#数字签名算法" class="headerlink" title="数字签名算法"></a>数字签名算法</h1><h2 id="参数定义"><a href="#参数定义" class="headerlink" title="参数定义"></a>参数定义</h2><p>先来看一下在数字签名中定义好的参数标志：<br>$G$：$(x_G,y_G)$  椭圆曲线选取的一个阶为素数的基点<br>$d_A$: 用户A的私钥<br>$P_A$: $(x_A,y_A)$  公钥，生成：$P_A&#x3D; d_A*G$<br>$H_v(x)$: x 的消息摘要，摘要的长度为$v$，这里用的杂凑算法是<code>SM3</code><br>$(r,s)$: 发送的签名<br>$a,b$: 椭圆曲线参数 $y &#x3D; x^3 +ax + b$</p><p>特别说一下一个特别的参数$Z_A$：</p><p>签名者A有长度为$entlen_A$比特的可辩别标识$ID_A$，记$ENTL_A$是由整数$entlen_A$转换成的俩个字节；<br>（$ID_A$：用户 A 的身份标识，它可能是个人的用户签名（email）、企业签名、服务器证书（域名）、设备认证（MAC地址））</p><p>$Z_A &#x3D; H_{256}(ENTL_A || ID_A || a || b || x_G || y_G || x_A || y_A)$</p><h2 id="生成算法"><a href="#生成算法" class="headerlink" title="生成算法"></a>生成算法</h2><h2 id="验证算法"><a href="#验证算法" class="headerlink" title="验证算法"></a>验证算法</h2>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>crypto</tag>
+      
+      <tag>国密</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>关于sagemath10.X运行Castryck-Decru-SageMath可能遇到的问题</title>
     <link href="/2026/05/13/crypto/%E5%85%B3%E4%BA%8Esagemath10-X%E8%BF%90%E8%A1%8CCastryck-Decru-SageMath%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/"/>
     <url>/2026/05/13/crypto/%E5%85%B3%E4%BA%8Esagemath10-X%E8%BF%90%E8%A1%8CCastryck-Decru-SageMath%E5%8F%AF%E8%83%BD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</url>
