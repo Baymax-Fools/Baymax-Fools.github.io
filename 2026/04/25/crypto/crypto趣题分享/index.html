@@ -26,15 +26,14 @@
 <meta property="og:site_name" content="Baymax&#39; blogs">
 <meta property="og:description" content="[强网杯 2024]21_steps题目： 1234567891011121314151617181920212223242526272829303132import reimport randomfrom secrets import flagprint(f&#x27;Can you weight a 128 bits number in 21 steps&#x27;)pattern &#x3D; r&amp;#">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/images/crypto/crypto%E8%B6%A3%E9%A2%98%E5%88%86%E4%BA%AB/1.png">
-<meta property="og:image" content="http://example.com/images/crypto/crypto%E8%B6%A3%E9%A2%98%E5%88%86%E4%BA%AB/1.png">
+<meta property="og:image" content="http://example.com/.com//crypto%E8%B6%A3%E9%A2%98%E5%88%86%E4%BA%AB/1.png">
 <meta property="article:published_time" content="2026-04-25T04:25:38.000Z">
-<meta property="article:modified_time" content="2026-05-12T05:58:20.330Z">
+<meta property="article:modified_time" content="2026-06-17T06:41:00.347Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta property="article:tag" content="刷题">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/images/crypto/crypto%E8%B6%A3%E9%A2%98%E5%88%86%E4%BA%AB/1.png">
+<meta name="twitter:image" content="http://example.com/.com//crypto%E8%B6%A3%E9%A2%98%E5%88%86%E4%BA%AB/1.png">
   
   
   
@@ -297,7 +296,7 @@
 <p>$$0x01010101 &#x3D; 2^{24} + 2^{16} + 2^8 + 2^0$$</p>
 <p>当你用 <code>v</code> 乘以这个数时，根据分配律，相当于：</p>
 <p>$$Result &#x3D; v \cdot (2^{24} + 2^{16} + 2^8 + 1)$$</p>
-<p>$$Result &#x3D; (v \ll 24) + (v \ll 16) + (v \ll 8) + (v \ll 0)$$<br>所以4个字节中<code>1</code>的个数就在<code>24-31</code>位的这个字节里，其他的字节都是些杂数据，可以根据下面的图来看为什么是 右移24位<br><img src="/images/crypto/crypto趣题分享/1.png" srcset="/img/loading.gif" lazyload><br><img src="/../../images/crypto/crypto%E8%B6%A3%E9%A2%98%E5%88%86%E4%BA%AB/1.png" srcset="/img/loading.gif" lazyload><br>题目分析时的脚本：</p>
+<p>$$Result &#x3D; (v \ll 24) + (v \ll 16) + (v \ll 8) + (v \ll 0)$$<br>所以4个字节中<code>1</code>的个数就在<code>24-31</code>位的这个字节里，其他的字节都是些杂数据，可以根据下面的图来看为什么是 右移24位<br><img src="/.com//crypto趣题分享/1.png" srcset="/img/loading.gif" lazyload><br>题目分析时的脚本：</p>
 <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">import</span> random<br><br><span class="hljs-attribute">bit_2</span> = b&#x27;<span class="hljs-number">0</span>b&#x27; + b&#x27;<span class="hljs-number">01</span>&#x27; * (<span class="hljs-number">128</span> // <span class="hljs-number">2</span>)<br><span class="hljs-attribute">bit_4</span> = b&#x27;<span class="hljs-number">0</span>b&#x27; + b&#x27;<span class="hljs-number">0011</span>&#x27; * (<span class="hljs-number">128</span> // <span class="hljs-number">4</span>)<br><span class="hljs-attribute">bit_8</span> = b&#x27;<span class="hljs-number">0</span>b&#x27; + b&#x27;<span class="hljs-number">00001111</span>&#x27; * (<span class="hljs-number">128</span> // <span class="hljs-number">8</span>)<br><br><span class="hljs-attribute">bit_2</span> = int(bit_2,<span class="hljs-number">2</span>)<br><span class="hljs-attribute">bit_4</span> = int(bit_4,<span class="hljs-number">2</span>)<br><span class="hljs-attribute">bit_8</span> = int(bit_8,<span class="hljs-number">2</span>)<br><br><span class="hljs-attribute">print</span>(bit_2)<br><span class="hljs-attribute">print</span>(bit_4)<br><span class="hljs-attribute">print</span>(bit_8)<br><span class="hljs-attribute">A</span> = random.randrange(<span class="hljs-number">0</span>, <span class="hljs-number">2</span>**<span class="hljs-number">128</span>)<br><span class="hljs-attribute">w</span> = lambda x: sum([int(i) for i in list(bin(x)[<span class="hljs-number">2</span>:])])<br><br><span class="hljs-attribute">print</span>(<span class="hljs-string">&quot;w(A): &quot;</span>, w(A))<br><br><span class="hljs-attribute">def</span> solve_128(A):<br>    <span class="hljs-attribute">A</span> = A - ((A &gt;&gt; <span class="hljs-number">1</span>) &amp; bit_2)<br>    <span class="hljs-attribute">A</span> = (A &amp; bit_4) + ((A &gt;&gt; <span class="hljs-number">2</span>) &amp; bit_4)<br>    <span class="hljs-attribute">A</span> = (A + (A &gt;&gt; <span class="hljs-number">4</span>)) &amp; bit_8<br>    <br>    <span class="hljs-comment"># 折半相加</span><br>    <span class="hljs-attribute">A</span> = (A + (A &gt;&gt; <span class="hljs-number">8</span>))<br>    <span class="hljs-attribute">A</span> = (A + (A &gt;&gt; <span class="hljs-number">16</span>))<br>    <span class="hljs-attribute">A</span> = (A + (A &gt;&gt; <span class="hljs-number">32</span>))<br>    <span class="hljs-attribute">A</span> = (A + (A &gt;&gt; <span class="hljs-number">64</span>))<br><br>    <span class="hljs-attribute">return</span> A &amp; <span class="hljs-number">0</span>xFF # 注意记得这步<br><span class="hljs-attribute">print</span>(solve_128(A))<br></code></pre></td></tr></table></figure>
 
 <p>题目脚本：</p>
@@ -349,7 +348,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>May 12, 2026</div>
+          <div>June 17, 2026</div>
         </div>
       
       
