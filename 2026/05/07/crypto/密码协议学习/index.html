@@ -29,7 +29,7 @@
 <meta property="og:image" content="http://example.com/photos/%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/1.png">
 <meta property="og:image" content="http://example.com/photos/%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE%E5%AD%A6%E4%B9%A0/2.png">
 <meta property="article:published_time" content="2026-05-07T09:54:32.000Z">
-<meta property="article:modified_time" content="2026-06-17T06:41:00.369Z">
+<meta property="article:modified_time" content="2026-06-26T09:52:53.151Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k words
+          2.6k words
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          11 mins
+          23 mins
         
       </span>
     
@@ -307,30 +307,52 @@
 <li>网络接口层：对应<code>OSI</code>中的物理层+数据链路层</li>
 <li>网络层：对应<code>OSI</code>中的网络层</li>
 <li>传输层：对应<code>OSI</code>中的传输层</li>
-<li>应用层：对应<code>OSI</code>中的应用层+表示层+会话</li>
+<li>应用层：对应<code>OSI</code>中的应用层+表示层+会话层</li>
 </ol>
 <h1 id="IPSec协议"><a href="#IPSec协议" class="headerlink" title="IPSec协议"></a>IPSec协议</h1><p>注：工作在<code>OSI</code>模型的第三层（网络层）</p>
-<p>IPSec协议不是具体的一个协议，它指的是一组基于网络层的安全通信协议族（应用密码学）<br>设计思想：将基于密码技术的安全机制引入IP协议（IPv4、IPv6），实现网络层的通信安全</p>
-<p>IPSec协议主要分为</p>
+<p><code>IPSec</code>协议不是具体的一个协议，它指的是<strong>一组基于网络层的安全通信协议族</strong>（应用密码学）<br>设计思想：将基于密码技术的安全机制引入<code>IP</code>协议（<code>IPv4、IPv6</code>），实现网络层的通信安全</p>
+<p><code>IPSec</code>协议主要分为</p>
 <ol>
-<li>认证头（AH），为IP数据报提供无连接数据完整性、消息认证以及防重放攻击保护</li>
-<li>封装安全载荷（ESP），提供机密性、数据源认证、无连接完整性、防重放和有限的传输流（traffic-flow）机密性；</li>
-<li>因特网密钥交换（称IKE或IKEv2），为AH、ESP操作所需的安全关联SA（Security Association,安全联盟,博客后面会说））提供算法、数据包和密钥参数</li>
+<li>认证头（AH）协议，为IP数据报提供无连接数据完整性、消息认证以及防重放攻击保护</li>
+<li>封装安全载荷（ESP）协议，提供机密性、数据源认证、无连接完整性、防重放和有限的传输流（traffic-flow）机密性；</li>
+<li>因特网密钥交换（称IKE或IKEv2）协议，为AH、ESP操作所需的安全关联SA（Security Association,安全联盟,博客后面会说））提供算法、数据包和密钥参数</li>
 </ol>
 <p>IPSec协议的俩个环节：<br>第一环节：使用IKE完成通信双方的身份鉴别，确定通信时使用的IPSec安全策略和密钥；<br>第二环节：使用上一环节中协商确定的安全策略和密钥，执行ESP协议，开始通信数据的安全传输。</p>
 <p>借用一下大佬的图（来自<a target="_blank" rel="noopener" href="https://blog.csdn.net/NEUChords/article/details/92968314">https://zhuanlan.zhihu.com/p/488141423</a>）：<br>	<img src="/photos/密码协议学习/1.png" srcset="/img/loading.gif" lazyload><br><img src="/photos/密码协议学习/2.png" srcset="/img/loading.gif" lazyload></p>
-<p>IPSec协议的俩种模式：</p>
+<p><code>IPSec</code>协议的俩种模式：</p>
 <ul>
 <li>传输模式：用于端到端应用场景。不改动IP头，只保护IP载荷；</li>
-<li>隧道模式：用于创建<code>VPN</code> (Virtual Private Network,虚拟专用网)。对整个IP报文(包括原先的IP头、IP载荷)提供加密和认证，添加新的IP头。</li>
+<li>隧道模式：经常用于私网与私网之间通过公网进行通信，建立安全<code>VPN</code>通道(Virtual Private Network,虚拟专用网)。对整个IP报文(包括原先的IP头、IP载荷)提供加密和认证，添加新的IP头。</li>
 </ul>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">原始 IP 包：<br>[ IPH ][ Data ]  <br><br>传输模式：    <br>[ IPH ][ IPSec ][ Data ]  <br><br>隧道模式：  <br>[ New IPH ][ IPSec ][ Org IPH ][ Data ]  <br></code></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs text">原始 IP 包：<br>[ IP头 ][ Data ]  <br><br>传输模式：    <br>[ IP头 ][ IPSec ][ Data ]  <br><br>隧道模式：  <br>[ 新IP头 ][ IPSec ][ 旧IP头 ][ Data ]  <br></code></pre></td></tr></table></figure>
 <ul>
-<li><code>IPH</code>：IP Header（IP头）  </li>
 <li><code>IPSec</code>：AH 或 ESP 安全头  </li>
 <li><code>Data</code>：数据载荷</li>
-<li><code>Org IPH</code>：原始IPH</li>
 </ul>
+<h2 id="AH协议"><a href="#AH协议" class="headerlink" title="AH协议"></a>AH协议</h2><p>知识点：</p>
+<ol>
+<li>AH协议提供数据源身份鉴别、完整性和抗重放攻击等安全功能；</li>
+<li>AH协议不提供保密性服务，即<strong>不执行加密操作；</strong></li>
+<li>GM&#x2F;T 0022-2014《IPSec VPN技术规范》中规定：AH应<strong>与ESP嵌套使用</strong>，不得单独使用；</li>
+<li>作用：为整个IP数据报文(包括IP头和IP载荷)提供<strong>完整性校验</strong>，检测数据包是否被篡改；</li>
+<li>AH使用MAC(通常为HMAC)检测篡改，密钥来自IKE协定的用于完整性校验的会话密钥；</li>
+<li>AH分配到的<strong>协议号是51</strong>。即使用AH协议进行安全保护的IPv4数据报文的IP头部中协议字段将是51，表明IP头之后是一个AH头。</li>
+<li>AH 在传输模式和隧道模式下都提供完整性保护与数据源认证，但因封装位置不同，其具体保护范围并不完全相同，且均不包括 IP 头中的可变字段。</li>
+</ol>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs text">原始 IP 包：<br>[ IP头 ][ Data ]<br><br>传输模式：<br>[ IP头 ][ AH ][ Data ]<br>       &lt;--- 受保护 ---&gt;<br><br>隧道模式：<br>[ 新IP头 ][ AH ][ 原IP头 ][ Data ]<br>          &lt;------- 受保护 ------&gt;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="ESP协议"><a href="#ESP协议" class="headerlink" title="ESP协议"></a>ESP协议</h2><ol>
+<li>ESP提供对数据报文加密功能；</li>
+<li>GM&#x2F;T 0022-2014《IPSec VPN技术规范》中规定：ESP 可以被单独使用，也可以与AH结合使用；</li>
+<li>当ESP被单独使用时，GM&#x2F;T 0022-2014 中规定必须同时提供保密性和数据源身份鉴别服务。单独使用 ESP 时可以支持 NAT(网络地址转换)；</li>
+<li>当 ESP 与 AH 结合使用时，GM&#x2F;T 0022-2014中规定 ESP 不提供数据源身份鉴别服务，而由 AH 提供数据源身份鉴别；</li>
+<li>ESP在传输模式和隧道模式中有不同的放置位置，保护的范围不同。</li>
+<li>ESP之前的IP头中的协议字段将是50，以表明IP头之后是一个ESP头，ESP不仅具备ESP头，还有一个包含有用信息的ESP尾。</li>
+</ol>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs inform7">ESP传输模式：<br><br>				  |&lt;---------- 加密 ----------&gt;|<br><span class="hljs-comment">[ 原IP头 ]</span><span class="hljs-comment">[ ESP头 ]</span><span class="hljs-comment">[ 上层协议头 ]</span><span class="hljs-comment">[ Data ]</span><span class="hljs-comment">[ ESP尾 ]</span><span class="hljs-comment">[ ESP认证数据 ]</span><br>           |&lt;-------------- 认证 -------------&gt;|<br>                    <br><br>ESP隧道模式：<br><br>					  |&lt;-------------- 加密 ---------------&gt;|<br><span class="hljs-comment">[ 新IP头 ]</span><span class="hljs-comment">[ ESP头 ]</span><span class="hljs-comment">[ 原IP头 ]</span><span class="hljs-comment">[ 上层协议头 ]</span><span class="hljs-comment">[ Data ]</span><span class="hljs-comment">[ ESP尾 ]</span><span class="hljs-comment">[ ESP认证数据 ]</span><br>          |&lt;------------------ 认证 --------------------&gt;|<br>                         <br></code></pre></td></tr></table></figure>
+<p>传输模式：为ESP头后的载荷提供保密性，为原IP头后的内容提供认证保护。<br>隧道模式：为整个原IP报文提供保密性，为新建IP头后的内容提供认证保护。</p>
+<h2 id="AH-ESP模式图"><a href="#AH-ESP模式图" class="headerlink" title="AH + ESP模式图"></a>AH + ESP模式图</h2><figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs x86asm"><span class="hljs-number">AH</span> + <span class="hljs-built_in">ESP</span> 传输模式：<br>[ <span class="hljs-built_in">IP</span>头 ][ <span class="hljs-number">AH</span> ][ <span class="hljs-built_in">ESP</span>头 ][ 上层协议头 ][ Data ][ <span class="hljs-built_in">ESP</span>尾 ][ <span class="hljs-built_in">ESP</span>认证数据 ]<br>  <span class="hljs-number">AH</span>认证: [ <span class="hljs-built_in">IP</span>头中不可变字段 + <span class="hljs-number">AH</span>后内容 ]<br>  <span class="hljs-built_in">ESP</span>认证: [ <span class="hljs-built_in">ESP</span>头 + 上层协议头 + Data + <span class="hljs-built_in">ESP</span>尾 ]<br>  <span class="hljs-built_in">ESP</span>加密: [ 上层协议头 + Data + <span class="hljs-built_in">ESP</span>尾 ]<br><br><span class="hljs-number">AH</span> + <span class="hljs-built_in">ESP</span> 隧道模式：<br>[ 新<span class="hljs-built_in">IP</span>头 ][ <span class="hljs-number">AH</span> ][ <span class="hljs-built_in">ESP</span>头 ][ 原<span class="hljs-built_in">IP</span>头 ][ 上层协议头 ][ Data ][ <span class="hljs-built_in">ESP</span>尾 ][ <span class="hljs-built_in">ESP</span>认证数据 ]<br>  <span class="hljs-number">AH</span>认证: [ 新外层<span class="hljs-built_in">IP</span>头中不可变字段 + <span class="hljs-number">AH</span>后内容 ]<br>  <span class="hljs-built_in">ESP</span>认证: [ <span class="hljs-built_in">ESP</span>头 + 原<span class="hljs-built_in">IP</span>头 + 上层协议头 + Data + <span class="hljs-built_in">ESP</span>尾 ]<br>  <span class="hljs-built_in">ESP</span>加密: [ 原<span class="hljs-built_in">IP</span>头 + 上层协议头 + Data + <span class="hljs-built_in">ESP</span>尾 ]<br><br></code></pre></td></tr></table></figure>
+
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/NEUChords/article/details/92968314">https://zhuanlan.zhihu.com/p/488141423</a><br><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/IPsec">https://zh.wikipedia.org/wiki/IPsec</a></p>
 
                 
@@ -375,7 +397,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>June 17, 2026</div>
+          <div>June 26, 2026</div>
         </div>
       
       
