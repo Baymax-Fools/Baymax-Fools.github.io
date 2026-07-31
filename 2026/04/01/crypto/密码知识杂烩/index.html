@@ -27,8 +27,9 @@
 <meta property="og:description" content="消息认证码（MAC）经过特定算法后产生的一小段信息，检查某段消息的完整性，作为身份验证，确认消息的来源MAC的算法中，通常会使用带密钥的散列函数，或块密码的带认证工作模式 伽罗瓦消息认证码（GMAC）：是GCM的一种仅用于认证的变体，可以形成增量消息认证码。GCM和GMAC都可以接受任意长度的初始化向量 GCM工作模式GCM 全称为 Galois&#x2F;Counter Mode，可以看出 G">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/photos/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/1.png">
+<meta property="og:image" content="http://example.com/photos/Pasted%20image%2020260731180322.png">
 <meta property="article:published_time" content="2026-04-01T04:27:32.000Z">
-<meta property="article:modified_time" content="2026-07-11T08:47:04.883Z">
+<meta property="article:modified_time" content="2026-07-31T10:03:22.932Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -229,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          373 words
+          741 words
         
       </span>
     
@@ -240,7 +241,7 @@
         
         
         
-          4 mins
+          7 mins
         
       </span>
     
@@ -286,7 +287,9 @@
 <p>伽罗瓦消息认证码（GMAC）：是GCM的一种仅用于认证的变体，可以形成增量<strong>消息认证码</strong>。GCM和GMAC都可以接受任意长度的初始化向量</p>
 <h2 id="GCM工作模式"><a href="#GCM工作模式" class="headerlink" title="GCM工作模式"></a>GCM工作模式</h2><p>GCM 全称为 Galois&#x2F;Counter Mode，可以看出 G 是指 GMAC，C 是指 CTR。它在 CTR 加密的基础上增加 GMAC 的特性，解决了 CTR 不能对加密消息进行完整性校验的问题。</p>
 <p>加密：<code>密钥：K、明文：P、初始向量IV、附加数据：AD</code><br>	1.用密钥对明文加密得到<code>C</code><br>	2.用密文和<code>AD</code>计算得到<code>认证标签T</code><br>解密：<br>	1.接收者(有密钥<code>K</code>)接收到<code>AD、C、T</code><br>	2.正常解密出<code>P</code><br>	3.计算检查<code>T</code>来看密文或者<code>AD</code>有没有被篡改<br>	<img src="/photos/密码知识杂烩/1.png" srcset="/img/loading.gif" lazyload></p>
-<h1 id="信封加密（混合加密）"><a href="#信封加密（混合加密）" class="headerlink" title="信封加密（混合加密）"></a>信封加密（混合加密）</h1><h1 id="口令"><a href="#口令" class="headerlink" title="口令"></a>口令</h1>
+<h1 id="信封加密（混合加密）"><a href="#信封加密（混合加密）" class="headerlink" title="信封加密（混合加密）"></a>信封加密（混合加密）</h1><h1 id="口令"><a href="#口令" class="headerlink" title="口令"></a>口令</h1><h1 id="带盐值的哈希函数"><a href="#带盐值的哈希函数" class="headerlink" title="带盐值的哈希函数"></a>带盐值的哈希函数</h1><h1 id="HFE"><a href="#HFE" class="headerlink" title="HFE"></a>HFE</h1><h1 id="oil"><a href="#oil" class="headerlink" title="oil"></a>oil</h1><h1 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h1><p>使用会话 ID Cookie 时，会话信息存储在服务器上；而使用 JWT 时，会话信息则存储在客户端上。</p>
+<p>HTTP 头部中用于向服务器发送 JWT 的字段名称：Authorization<br><img src="/photos/Pasted image 20260731180322.png" srcset="/img/loading.gif" lazyload><br>示例：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>Bearer &lt;你的JWT字符串&gt;<br><br><span class="hljs-keyword">GET</span> <span class="hljs-string">/api/user/profile</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>api.example.com<br><span class="hljs-attribute">Authorization</span><span class="hljs-punctuation">: </span>Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c<br></code></pre></td></tr></table></figure>
                 
               </div>
             
@@ -329,7 +332,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>July 11, 2026</div>
+          <div>July 31, 2026</div>
         </div>
       
       
