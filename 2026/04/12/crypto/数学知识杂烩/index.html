@@ -27,7 +27,7 @@
 <meta property="og:description" content="素数筛选——Eratosthenes筛法从小素数开始，找到的素数的倍数一定是合数， 1234567891011121314prime &#x3D; []is_prime &#x3D; [False] * Ndef Eratosthenes(n):    is_prime[0] &#x3D; is_prime[1] &#x3D; False    for i in range(2, n + 1):        is_prime[i] &#x3D;">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-04-12T08:35:42.000Z">
-<meta property="article:modified_time" content="2026-05-19T07:07:57.700Z">
+<meta property="article:modified_time" content="2026-09-14T07:04:32.388Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -227,7 +227,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          984 words
+          1.4k words
         
       </span>
     
@@ -238,7 +238,7 @@
         
         
         
-          9 mins
+          12 mins
         
       </span>
     
@@ -290,6 +290,17 @@
 <h1 id="拉格朗日插值多项式"><a href="#拉格朗日插值多项式" class="headerlink" title="拉格朗日插值多项式"></a>拉格朗日插值多项式</h1><p>构造公式：<br>(1)$$<br>P(x) &#x3D; \sum_{i&#x3D;1}^{n} y_i \prod_{\substack{j&#x3D;1 \ j \neq i}}^{n} \frac{x - x_j}{x_i - x_j}<br>$$<br>(2)<br>$$<br>P(x) &#x3D; \sum_{i&#x3D;1}^{n} y_i*L(x),L(x)&#x3D;\prod_{\substack{j&#x3D;1 \ j \neq i}}^{n} \frac{x - x_j}{x_i - x_j}<br>$$</p>
 <p>给定平面上的<code>n</code>个点<code>(x1,y1)(x2,y2)...(xn,yn)</code>（所有x不相同），<strong>拉格朗日插值多项式</strong>是唯一一个次数不超过<code>n-1</code>的多项式<code>P(x)</code>，满足：<br>$$<br>P(x_i)&#x3D;y_i(i&#x3D;1,…,k)<br>$$</p>
 <h1 id="同态"><a href="#同态" class="headerlink" title="同态"></a>同态</h1><p>对于群同态，单位元一定映射到单位元</p>
+<h1 id="Sophie-Germain-素数"><a href="#Sophie-Germain-素数" class="headerlink" title="Sophie Germain 素数"></a>Sophie Germain 素数</h1><p><code>p = 2q + 1，其中 p 和 q 都是素数，且 2 模 p 生成一个阶为 q 的群。</code></p>
+<ol>
+<li><p><strong>p 是安全素数（safe prime）</strong>：p &#x3D; 2q+1 且 p、q 都素，此时 q 叫 <code>Sophie Germain</code> 素数。这意味着模 p 的乘法群 ℤₚ* 的阶为 p−1 &#x3D; 2q，它的子群结构只有三种：阶 1、阶 2、阶 q——没有其他因子，这就是密码学里喜欢它的原因（比如 Schnorr 签名、DSA、ElGamal 取子群时，小的光滑因子攻击不存在）。</p>
+</li>
+<li><p><strong>“2 生成阶为 q 的群”</strong>：即元素 2 在 ℤₚ* 中的阶是 q：</p>
+<p> $2^q≡1(modp)，且对任意0&lt;k&lt;q, 2^k≢1(modp)$</p>
+<p> 也就是说 2 是<strong>二次剩余子群（QR subgroup）的生成元</strong>——QR 子群恰好有 q 个元素，2 是它的原根。</p>
+</li>
+<li><p><strong>隐含信息</strong>：既然 2^q ≡ 1 (mod p)，说明 2 是 QR（欧拉判别：2^((p−1)&#x2F;2) &#x3D; 2^q ≡ 1），等价于勒让德符号 (2&#x2F;p) &#x3D; 1，即 p ≡ ±1 (mod 8)。</p>
+</li>
+</ol>
 
                 
               </div>
@@ -333,7 +344,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>May 19, 2026</div>
+          <div>September 14, 2026</div>
         </div>
       
       
