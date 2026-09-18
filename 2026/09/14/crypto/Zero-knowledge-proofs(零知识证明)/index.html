@@ -19,16 +19,16 @@
   <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
-    <meta name="description" content="注：本文是跟着 CryptoHack 的 Zero Knowledge Proofs 分类学习时整理的知识点，主线就是 Σ-协议（Sigma Protocol） 这一条，从交互式证明一路讲到 Fiat-Shamir 签名，题目本身不在这展开。 零知识证明零知识证明（ZKP）：让证明者 P 向验证者 V 证明”某个陈述为真”，但除了”它为真”之外，不泄露任何额外信息。 ZKP 同时满足三个性质：">
+    <meta name="description" content="注：本文是跟着 CryptoHack 的 Zero Knowledge Proofs 分类学习时整理的知识点，主线就是 Σ-协议（Sigma Protocol） 这一条，从交互式证明一路讲到 Fiat-Shamir 非交互化、OR 复合，题目本身不在这展开。 零知识证明零知识证明（ZKP）：让证明者 P 向验证者 V 证明”某个陈述为真”，但除了”它为真”之外，不泄露任何额外信息。 ZKP 同时满">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Zero-knowledge proofs(零知识证明)">
 <meta property="og:url" content="https://baymax-fools.github.io/2026/09/14/crypto/Zero-knowledge-proofs(%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E)/index.html">
 <meta property="og:site_name" content="Baymax&#39; blogs">
-<meta property="og:description" content="注：本文是跟着 CryptoHack 的 Zero Knowledge Proofs 分类学习时整理的知识点，主线就是 Σ-协议（Sigma Protocol） 这一条，从交互式证明一路讲到 Fiat-Shamir 签名，题目本身不在这展开。 零知识证明零知识证明（ZKP）：让证明者 P 向验证者 V 证明”某个陈述为真”，但除了”它为真”之外，不泄露任何额外信息。 ZKP 同时满足三个性质：">
+<meta property="og:description" content="注：本文是跟着 CryptoHack 的 Zero Knowledge Proofs 分类学习时整理的知识点，主线就是 Σ-协议（Sigma Protocol） 这一条，从交互式证明一路讲到 Fiat-Shamir 非交互化、OR 复合，题目本身不在这展开。 零知识证明零知识证明（ZKP）：让证明者 P 向验证者 V 证明”某个陈述为真”，但除了”它为真”之外，不泄露任何额外信息。 ZKP 同时满">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://baymax-fools.github.io/photos/Zero-knowledge-proofs(%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E)/1.png">
 <meta property="article:published_time" content="2026-09-14T06:48:44.000Z">
-<meta property="article:modified_time" content="2026-09-16T01:45:39.111Z">
+<meta property="article:modified_time" content="2026-09-18T04:50:35.805Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta property="article:tag" content="密码协议">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.7k words
+          5.9k words
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          23 mins
+          50 mins
         
       </span>
     
@@ -283,7 +283,7 @@
             
               <div class="markdown-body">
                 
-                <p>注：本文是跟着 <a target="_blank" rel="noopener" href="https://cryptohack.org/challenges/zkp/">CryptoHack 的 Zero Knowledge Proofs 分类</a>学习时整理的知识点，主线就是 <strong>Σ-协议（Sigma Protocol）</strong> 这一条，从交互式证明一路讲到 Fiat-Shamir 签名，题目本身不在这展开。</p>
+                <p>注：本文是跟着 <a target="_blank" rel="noopener" href="https://cryptohack.org/challenges/zkp/">CryptoHack 的 Zero Knowledge Proofs 分类</a>学习时整理的知识点，主线就是 <strong>Σ-协议（Sigma Protocol）</strong> 这一条，从交互式证明一路讲到 Fiat-Shamir 非交互化、OR 复合，题目本身不在这展开。</p>
 <h1 id="零知识证明"><a href="#零知识证明" class="headerlink" title="零知识证明"></a>零知识证明</h1><p><strong>零知识证明（ZKP）：让证明者 P 向验证者 V 证明”某个陈述为真”，但除了”它为真”之外，不泄露任何额外信息。</strong></p>
 <p>ZKP 同时满足三个性质：</p>
 <ul>
@@ -302,7 +302,7 @@
 <li><strong>见证 witness</strong>：满足关系的秘密 $w$，即 $g^w &#x3D; y \bmod p$（$y$ 关于 $g$ 的离散对数）</li>
 <li>合起来记作 $((p,q,g,y), w) \in R_{dlog}$</li>
 </ul>
-<p>注意：<strong>“证明知道 witness” ≠ “证明 statement 为真”</strong>。statement 是公开的，谁都知道它为真；ZKP 证明的是”我脑子里有那个满足关系的 $w$”。这类证明叫 <strong>proof of knowledge（知识证明）</strong>，</p>
+<p>注意：<strong>“证明知道 witness” ≠ “证明 statement 为真”</strong>。statement 是公开的，谁都知道它为真；ZKP 证明的是”我脑子里有那个满足关系的 $w$”。这类证明叫 <strong>proof of knowledge（知识证明）</strong>。</p>
 <h2 id="Schnorr-协议与-Σ-协议"><a href="#Schnorr-协议与-Σ-协议" class="headerlink" title="Schnorr 协议与 Σ-协议"></a>Schnorr 协议与 Σ-协议</h2><p><code>Schnorr</code> 给出了证明”我知道 $y$ 的离散对数”的交互协议。P、V 之间来回<strong>三条消息</strong>，消息流程画出来像希腊字母 Σ，所以这类协议统称 <strong>Σ-协议</strong>。</p>
 <p>参数：公开 $y &#x3D; g^w \bmod p$，秘密为 $w$。</p>
 <p>流程（三消息形式）：</p>
@@ -325,20 +325,56 @@
 <p>两式相减消掉 $r$：<br>$w &#x3D; (z - z’)(e - e’)^{-1} \bmod q$</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 已知同一 a 下两组被接受的 (e, z)，直接提取 w</span><br><span class="hljs-keyword">from</span> Crypto.Util.number <span class="hljs-keyword">import</span> inverse<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">extract_w</span>(<span class="hljs-params">e1, z1, e2, z2, q</span>):<br>    <span class="hljs-keyword">return</span> (z1 - z2) * inverse(e1 - e2, q) % q<br></code></pre></td></tr></table></figure>
 
+<p>注：<strong>Soundness vs Special Soundness</strong>。普通可靠性说：不知道 $w$ 的 P 骗过 V 的概率不超过 $1&#x2F;2^t$（挑战空间大小分之一）。特殊可靠性是更强的性质：它直接蕴含普通可靠性（不知道 $w$ 就答不了两个不同的 $e$，单轮成功全凭运气），还额外送一个 <strong>witness 提取器</strong>——后面 Fiat-Shamir 的安全证明、攻击者的”爆私钥”，全靠它。</p>
+<p>再补一个”证明知识”的角度：承诺 $a$ 发出后，能对<strong>一个</strong> $e$ 给出合法 $z$，可能只是运气（$1&#x2F;2^t$）；能对<strong>两个不同</strong> $e$ 都给出合法 $z$，就等价于本地能产出两份接受转录，等价于能算出 $w$。所以”能以不可忽略概率说服 V” ⇒ “$w$（或算出它的材料）就在 P 脑子里”——这就是”证明知识”的形式化含义（Bellare–Goldreich ‘92 的 extractor 定义）。</p>
 <h3 id="特殊诚实验证者零知识-SHVZK"><a href="#特殊诚实验证者零知识-SHVZK" class="headerlink" title="特殊诚实验证者零知识 SHVZK"></a>特殊诚实验证者零知识 SHVZK</h3><p><strong>SHVZK（Special Honest Verifier Zero-Knowledge）：只要 V 按协议老老实实出随机挑战，它从转录里学不到任何关于 $w$ 的东西。</strong></p>
 <p>证明思路是<strong>模拟器（Simulator）</strong>：不掌握 $w$ 的一方也能造出与真实转录分布一致的”假转录”——把协议倒着走一遍：</p>
 <p>1、先随机选 $z$、$e$<br>2、倒着算承诺 $a &#x3D; g^z \cdot y^{-e} \bmod p$<br>3、输出 $(a, e, z)$</p>
 <p>这个假转录照样满足验证等式 $g^z &#x3D; a \cdot y^e$，且与真实转录不可区分。连”作弊者”都能批量造出以假乱真的转录，说明转录本身就不携带关于 $w$ 的信息。</p>
+<p><strong>为什么 V 学不到东西（三条观察的推理链）</strong>：<br>1、V 本地跑模拟器就能造出<strong>任意多份</strong>接受转录 → 单纯”拿到一份转录”不构成任何计算 $w$ 的优势<br>2、诚实 V 的 $e$ 是均匀随机、且与 $a$ 无关的——“先看 $a$ 再选 $e$”实际上影响不了任何东西，这个 $e$ 甚至可以由 P 来随机生成<br>3、所以走完整套协议（先见 $a$、再见 $e$、再见 $z$）相比”只在最后看一眼完整转录”，没多学到任何东西；结合 ①，除了”P 知道 $w$”这个事实，V 一无所获</p>
+<p>注：模拟器在这里开了挂——它被允许<strong>在看到挑战之后</strong>才选 $a$（现实里 P 必须先承诺 $a$ 再收到 $e$，这个顺序正是安全性的全部支柱）。”给模拟器超能力”是证零知识的标准手法：超能力只消耗在生成过程内部，<strong>不进入 V 的视角</strong>，所以不造成”模拟世界 vs 真实世界”的信息差。其他协议的超能力还有可编程随机预言机、带陷门的公共参考字符串（CRS）等。</p>
 <p>注：带 “Special” 是因为模拟器依赖一个前提——“V 的挑战是均匀随机、且与 $a$ 无关”（这就是”诚实验证者”）。V 一旦不老实（故意挑特定的 $e$），这个性质就没了。这也是后面 Fiat-Shamir 里”挑战如何生成”成为核心安全问题的伏笔。</p>
 <h2 id="Fiat-Shamir-启发式：交互-→-非交互（签名）"><a href="#Fiat-Shamir-启发式：交互-→-非交互（签名）" class="headerlink" title="Fiat-Shamir 启发式：交互 → 非交互（签名）"></a>Fiat-Shamir 启发式：交互 → 非交互（签名）</h2><p>交互协议只能在线用。把它变成签名的标准操作是 <strong>Fiat-Shamir 变换</strong>：</p>
 <p>$e &#x3D; H(a \parallel m)$</p>
 <p>把”V 随机出挑战”替换成”对承诺和消息一起做哈希”，挑战由 P 自己算出来，不再需要交互。产出的 $(a, z)$ 就是对消息 $m$ 的 <strong>Schnorr 签名</strong>，安全性在随机预言机模型（ROM）下归约。</p>
-<p>关键点：此时协议里的随机数 $r$ 摇身一变成了<strong>签名 nonce</strong>——它一旦复用或可预测，第 6 节那个提取公式就会被攻击者拿过来反着用：</p>
+<p>为什么哈希能顶替”V 的随机挑战”？关键是<strong>顺序</strong>：只要 $e$ 在 $a$ 定下来之后才被”随机地”确定，这个随机数由谁产生无所谓。P 固然可以本地狂换 $a$ 来”抽签”想要的 $e$（grinding），但由特殊可靠性，不知道 $w$ 的 P 对一个给定 $a$ 最多只能答对一个特定 $e$——每次抽中概率 $1&#x2F;2^t$，多项式时间内伪造成功的概率可忽略。</p>
+<p><strong>注（CTF 高频考点）：哈希喂了什么非常讲究</strong>。原则上要把<strong>所有公开参数和全部首条消息</strong>都哈进去。FS 类题的经典漏洞就是”没把全部输入哈希进去”——轻则 $e &#x3D; H(m)$ 不含 $a$（等于先知道 $e$ 再造 $a$，任何人都能伪造，前面”先选 $e$ 再造 $a$”推论说的就是这事），重则没哈某些公开输入，P 可以在算出 $e$ 之后篡改初始数据伪造证明。做题先检查哈希吃了什么。</p>
+<p>关键点：此时协议里的随机数 $r$ 摇身一变成了<strong>签名 nonce</strong>——它一旦复用或可预测，上面特殊可靠性那个提取公式就会被攻击者拿过来反着用：</p>
 <ul>
 <li>交互协议里：只有 V 能借”同 $a$ 双挑战”提取 $w$（这叫安全性）</li>
 <li>签名里：任何人都能借”同一 nonce 的两份签名”提取私钥（这叫爆库）</li>
 </ul>
 <p>同样的故事在 ECDSA 上也成立（两份签名 $r$ 相同 &#x3D; nonce 复用，$k &#x3D; (h_1 - h_2)(s_1 - s_2)^{-1} \bmod n$，再回代 $d &#x3D; (s_1 k - h_1) r^{-1} \bmod n$），签名题里见烂了，根源都是这一条。</p>
+<p>再补两块理论，是”为什么能这么证”的底气：</p>
+<p><strong>提取器与 rewinding</strong>：交互版协议里，特殊可靠性给的提取器 E 是这么干的——收 $a$、发随机 $e$、收 $z$；把 P <strong>rewind</strong> 回刚发完 $a$ 的状态；再发一个随机 $e’$、收 $z’$——两份同 $a$ 异 $e$ 的转录到手，套提取公式出 $w$。rewinding 是知识证明的标准证明技术（也是上一类题目里”验证者重放挑战就爆 witness”的原理）。</p>
+<p><strong>随机预言机（RO）与可编程 RO</strong>：非交互化后 $e &#x3D; H(a)$ 对同一个 $a$ 永远是同一个值，上面的 rewind 没法做了。于是把哈希建模成<strong>随机预言机</strong>——首次收到某输入时返回均匀随机值并记录，重复询问返回同一值。在<strong>可编程 RO 模型</strong>里，提取器能观察 P 对 RO 的查询并控制其输出：让 $H(a)$ 第一次吐 $e$，把 P 连同 RO 一起 rewind，让它第二次吐 $e’$——等于在非交互世界里复刻了 rewinding。这就是”Σ-协议三性质免费换 NIZK 安全性”的机器细节。</p>
+<p><strong>FS 的意外之喜</strong>：变换把 V 的所有输入都从协议里拿掉了——V 再没有任何”作恶的抓手”。所以哪怕原来只证了 SHVZK（只防诚实 V），套上 FS 后对<strong>恶意验证者</strong>也零知识了。</p>
+<h2 id="恶意验证者：SHVZK-的-“Honest”-是软肋"><a href="#恶意验证者：SHVZK-的-“Honest”-是软肋" class="headerlink" title="恶意验证者：SHVZK 的 “Honest” 是软肋"></a>恶意验证者：SHVZK 的 “Honest” 是软肋</h2><p>SHVZK 的保证只覆盖”V 按协议出均匀随机挑战”。<strong>V 若故意挑选特殊的 $e$，事情可能崩</strong>。</p>
+<p>典型受害者：Girault 身份识别协议——一个跑在<strong>模合数 $N$</strong>（而非素数）上的 DLOG 型 Σ-协议。协议三件套齐全，但面对恶意 V 精心构造的挑战值，P 的诚实应答会把秘密直接泄露出去。</p>
+<p>对抗不可信 V 的两条修复路线：<br>1、<strong>做非交互（Fiat-Shamir）</strong>：V 的输入被完全移除，想作恶都没有接口——最省事<br>2、<strong>通用变换 SHVZK → 恶意安全 ZK</strong>：文献里有标准做法，一般多加一轮交互（防止 V 依据 P 的消息挑选 $e$）</p>
+<p>注：交互式 Σ-协议要拿去对抗不可信的 V，两条路必须选一条，裸奔不行。</p>
+<h2 id="OR-证明（CDS-构造）"><a href="#OR-证明（CDS-构造）" class="headerlink" title="OR 证明（CDS 构造）"></a>OR 证明（CDS 构造）</h2><p>Σ-协议是乐高：文献里一堆复合构造能把简单 Σ-协议拼成复杂功能，最基础的一块是 <strong>OR-proof</strong>（Cramer–Damgård–Schoenmakers, CRYPTO’94）：证明”<strong>我知道 $x_0$ 的 witness 或 $x_1$ 的 witness 之一</strong>“，且不泄露是哪个。环签名思想就是从这来的。</p>
+<p>流程（P 只掌握 $w_b$）：</p>
+<p>1、不知道的那侧（$1-b$）：自己随机挑 $e_{1-b}$，<strong>跑 SHVZK 模拟器</strong>直接造一份接受转录——模拟器第一次从”证明技巧”变成”协议零件”<br>2、知道的那侧（$b$）：诚实算承诺 $a_b &#x3D; g^r$<br>3、P 发 $(a_0, a_1)$，V 回随机挑战 $s$<br>4、P 设 $e_b &#x3D; s \oplus e_{1-b}$，用 $w_b$ 诚实算 $z_b$，发两份完整转录<br>5、V 验证 $e_0 \oplus e_1 &#x3D; s$，且两份转录各自通过验证</p>
+<p><strong>灵魂是 XOR 拆分</strong>：V 的一个挑战 $s$ 被拆成两份，P 自由决定一份（假侧开局就选好），另一份被 $s$ 锁死（真侧必须真刀真枪地答）。分布上 $e_b &#x3D; s \oplus e_{1-b}$ 依旧均匀，真侧看起来和正常交互无异。</p>
+<p>三性质全部继承（所以 $\Sigma_{OR}$ 本身还是 Σ-协议，能继续复合、继续套 FS）：</p>
+<ul>
+<li><strong>完备性</strong>：构造直接保证</li>
+<li><strong>零知识</strong>：两份转录各自的分布都正确，整体分布对 $b &#x3D; 0&#x2F;1$ 对称，V 看不出哪侧是真的——这正是”不泄露是哪个”</li>
+<li><strong>特殊可靠性</strong>：固定承诺，V 发两个不同挑战 $s \neq s’$ 且都被骗过 ⇒ $(e_0 \oplus e_0’) \oplus (e_1 \oplus e_1’) \neq 0$ ⇒ 至少一侧出现同 $a$ 异 $e$ 的两份转录 ⇒ 套提取公式，抽出某一侧的 witness</li>
+</ul>
+<p>一句话直觉：<strong>一半真话、一半模拟，XOR 把两半缝成一句完整回答</strong>——V 只能验”缝合后”的整体，而要缝得上，P 至少得有一半是真的。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><ul>
+<li><strong>三性质</strong>：完备性、可靠性、零知识性</li>
+<li><strong>Σ-协议</strong>：承诺 $a$ → 随机挑战 $e$ → 应答 $z$，三件套验收合格</li>
+<li><strong>特殊可靠性</strong>：同 $a$ 异 $e$ 两转录 → 可提取 $w$（蕴含普通可靠性，$w &#x3D; (z-z’)(e-e’)^{-1}$）</li>
+<li><strong>SHVZK</strong>：模拟器 $S(x, e)$ 造同分布转录 → 转录不含 $w$ 的信息</li>
+<li><strong>Fiat-Shamir</strong>：$e &#x3D; H(\text{全部公开输入} \parallel a)$，交互 → 非交互 NIZK，顺带对恶意 V 也安全</li>
+<li><strong>FS 漏洞点</strong>：哈希没吃全输入 &#x3D; 可伪造；nonce 复用 &#x3D; 爆私钥</li>
+<li><strong>恶意 V</strong>：SHVZK 只防诚实 V，对抗恶意 V 要靠 FS 非交互化或通用变换（Girault 之戒）</li>
+<li><strong>OR 证明</strong>：模拟一侧 + 诚实一侧，XOR 缝合，不泄露掌握的是哪个 witness</li>
+</ul>
+<p>刷这类题的固定思路：看到”证明你知道 $g^w &#x3D; y$”，老老实实实现 P 侧（$r$ 每次随机）；看到”服务给你转录”，盯特殊可靠性那条减法公式凑两组同承诺数据；看到”给你 $s$ 让你凭空造转录”，两侧全跑模拟器；看到 FS 签名，先检查哈希吃了什么、nonce 有没有复用。</p>
 
                 
               </div>
@@ -384,7 +420,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>September 16, 2026</div>
+          <div>September 18, 2026</div>
         </div>
       
       
