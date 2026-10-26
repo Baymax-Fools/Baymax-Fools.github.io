@@ -4,13 +4,21 @@
   
   
   <entry>
-    <title></title>
-    <link href="/2026/10/25/crypto/TLS%E5%8D%8F%E8%AE%AE/"/>
-    <url>/2026/10/25/crypto/TLS%E5%8D%8F%E8%AE%AE/</url>
+    <title>TLS协议</title>
+    <link href="/2026/10/26/crypto/TLS%E5%8D%8F%E8%AE%AE/"/>
+    <url>/2026/10/26/crypto/TLS%E5%8D%8F%E8%AE%AE/</url>
     
     <content type="html"><![CDATA[<h1 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h1><p>注：TLS 工作在传输层之上（<code>OSI</code>模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 <code>HTTPS</code> 的安全底座。本部分持续更新中，先从流量分析里最常用的 keylog 文件说起，握手与密钥调度以后慢慢补 <code>XD</code></p><h2 id="NSS-Key-Log-Format"><a href="#NSS-Key-Log-Format" class="headerlink" title="NSS Key Log Format"></a>NSS Key Log Format</h2><p>解密 TLS 流量的那把”钥匙”</p><p>NSS Key Log Format 最早由 Mozilla 的密码库 NSS 定义，如今是解密 TLS 流量的事实标准（de facto standard）——它并非任何 RFC 规定的官方协议，却几乎被整个生态采用。<br>格式本身非常简单：纯文本，每行三个空格分隔的字段 <code>&lt;标签&gt; &lt;ClientRandom&gt; &lt;密钥&gt;</code>。</p><ul><li>标签表明这是 TLS 密钥调度中派生出的哪一把 secret，如解密握手消息的 <code>CLIENT/SERVER_HANDSHAKE_TRAFFIC_SECRET</code>、解密应用数据的 <code>CLIENT/SERVER_TRAFFIC_SECRET_0</code>；</li><li><code>ClientRandom</code> 是该会话 <code>ClientHello</code> 里的 32 字节随机数，相当于”会话身份证”，分析工具靠它把密钥匹配到 pcap 里的具体连接；</li><li>最后一个字段才是真正的密钥材料（hex 编码的 HKDF 输出，TLS 1.3 中的SHA-384套件为 48 字节）。</li><li>一个文件里可以同时存在多场会话的密钥，全靠 ClientRandom 区分。</li></ul><p>这个文件的珍贵之处在于：TLS 1.3 强制 (EC)DHE 前向保密，即使拿到服务器 RSA 私钥也推不出会话密钥，keylog 是解密流量的唯一入口。</p><p>示例：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">CLIENT_HANDSHAKE_TRAFFIC_SECRET 210cb7af9f5d...42f663c6 f985875a9330...0a07f17<br>SERVER_HANDSHAKE_TRAFFIC_SECRET 210cb7af9f5d...42f663c6 654148cc554d...2887d7<br></code></pre></td></tr></table></figure><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] IETF. RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3[EB&#x2F;OL].<br><a href="https://datatracker.ietf.org/doc/html/rfc8446">https://datatracker.ietf.org/doc/html/rfc8446</a>.<br>[2] Mozilla. NSS Key Log Format[EB&#x2F;OL].<br><a href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format">https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format</a>.<br>[3] Wireshark Wiki. TLS[EB&#x2F;OL].<br><a href="https://wiki.wireshark.org/TLS">https://wiki.wireshark.org/TLS</a>.</p>]]></content>
     
     
+    
+    <tags>
+      
+      <tag>密码协议</tag>
+      
+      <tag>网络协议</tag>
+      
+    </tags>
     
   </entry>
   
@@ -69,9 +77,9 @@
     
     <tags>
       
-      <tag>crypto</tag>
-      
       <tag>密码协议</tag>
+      
+      <tag>网络协议</tag>
       
     </tags>
     
