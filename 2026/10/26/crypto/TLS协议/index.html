@@ -19,15 +19,15 @@
   <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
-    <meta name="description" content="TLS注：TLS 工作在传输层之上（OSI模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 HTTPS 的安全底座。本部分持续更新中，先从流量分析里最常用的 keylog 文件说起，握手与密钥调度以后慢慢补 XD NSS Key Log Format解密 TLS 流量的那把”钥匙” NSS Key Log Format 最早由 Mozilla 的密码库 NSS 定义，如今是解密 TLS">
+    <meta name="description" content="TLS注：TLS 工作在传输层之上（OSI模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 HTTPS 的安全底座。:D TLS 是什么：从原语到协议密码学原语（primitive）是积木：AES、RSA、SHA256、X25519……每一块单独看都很安全，但用户要的不是积木，是房子——两台素不相识的机器在不可信的网络上传数据，怎么协商出密钥、怎么确认对面不是骗子、怎么保证数据没被改？把">
 <meta property="og:type" content="article">
 <meta property="og:title" content="TLS协议">
 <meta property="og:url" content="https://baymax-fools.github.io/2026/10/26/crypto/TLS%E5%8D%8F%E8%AE%AE/index.html">
 <meta property="og:site_name" content="Baymax&#39; blogs">
-<meta property="og:description" content="TLS注：TLS 工作在传输层之上（OSI模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 HTTPS 的安全底座。本部分持续更新中，先从流量分析里最常用的 keylog 文件说起，握手与密钥调度以后慢慢补 XD NSS Key Log Format解密 TLS 流量的那把”钥匙” NSS Key Log Format 最早由 Mozilla 的密码库 NSS 定义，如今是解密 TLS">
+<meta property="og:description" content="TLS注：TLS 工作在传输层之上（OSI模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 HTTPS 的安全底座。:D TLS 是什么：从原语到协议密码学原语（primitive）是积木：AES、RSA、SHA256、X25519……每一块单独看都很安全，但用户要的不是积木，是房子——两台素不相识的机器在不可信的网络上传数据，怎么协商出密钥、怎么确认对面不是骗子、怎么保证数据没被改？把">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2026-10-26T08:15:20.000Z">
-<meta property="article:modified_time" content="2026-10-26T08:16:40.407Z">
+<meta property="article:modified_time" content="2026-10-27T11:31:16.616Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="密码协议">
 <meta property="article:tag" content="网络协议">
@@ -228,7 +228,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.1k words
+          7.6k words
         
       </span>
     
@@ -239,7 +239,7 @@
         
         
         
-          10 mins
+          64 mins
         
       </span>
     
@@ -281,7 +281,226 @@
             
               <div class="markdown-body">
                 
-                <h1 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h1><p>注：TLS 工作在传输层之上（<code>OSI</code>模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 <code>HTTPS</code> 的安全底座。本部分持续更新中，先从流量分析里最常用的 keylog 文件说起，握手与密钥调度以后慢慢补 <code>XD</code></p>
+                <h1 id="TLS"><a href="#TLS" class="headerlink" title="TLS"></a>TLS</h1><p>注：TLS 工作在传输层之上（<code>OSI</code>模型的表示层），为上层应用提供机密性、完整性与身份鉴别，是 <code>HTTPS</code> 的安全底座。:D</p>
+<h2 id="TLS-是什么：从原语到协议"><a href="#TLS-是什么：从原语到协议" class="headerlink" title="TLS 是什么：从原语到协议"></a>TLS 是什么：从原语到协议</h2><p>密码学原语（primitive）是积木：AES、RSA、SHA256、X25519……每一块单独看都很安全，但用户要的不是积木，是房子——两台素不相识的机器在不可信的网络上传数据，怎么协商出密钥、怎么确认对面不是骗子、怎么保证数据没被改？把积木按规定的流程拼起来，就是<strong>密码协议</strong>（protocol）。</p>
+<p>TLS 的设计目标可以用 CIA 三性概括，每一条都能对应到协议里的具体机制：</p>
+<table>
+<thead>
+<tr>
+<th>性质</th>
+<th>含义</th>
+<th>TLS 里的对应</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Confidentiality 机密</td>
+<td>内容只有通信双方能看</td>
+<td>握手协商出的对称密钥 + AEAD 加密</td>
+</tr>
+<tr>
+<td>Authenticity 认证</td>
+<td>对面确实是它声称的那个人</td>
+<td>证书 + CA 签名 + CertificateVerify</td>
+</tr>
+<tr>
+<td>Integrity 完整</td>
+<td>数据在路上没被篡改</td>
+<td>记录层 MAC&#x2F;AEAD 标签 + Finished 校验</td>
+</tr>
+</tbody></table>
+<p>但只看安全是拼不出真实互联网的。从老年机到数据中心都在跑 TLS，于是有三个工程目标和 CIA 并列：<strong>互操作</strong>（实现不同、算法集不同也要能握手）、<strong>可扩展</strong>（新功能靠 extension 塞，不动核心协议）、<strong>高效</strong>（低端设备上密码运算很贵）。互操作和安全是天然打架的——正为了让古董设备也能连，才有服务器到今天还留着 TLS 1.0 甚至 SSL 3.0 的口子，而这些版本早就破得筛子一样（POODLE 等）。协议设计里一半的别扭都来自这个拉扯。</p>
+<p>版本时间线（SSL 是 TLS 的前身，1999 年起改名换姓）：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">SSL</span> <span class="hljs-number">2</span>.<span class="hljs-number">0</span>      <span class="hljs-number">1995</span>  Netscape 处女作，已死<br><span class="hljs-attribute">SSL</span> <span class="hljs-number">3</span>.<span class="hljs-number">0</span>      <span class="hljs-number">1996</span>  已死（POODLE）<br><span class="hljs-attribute">TLS</span> <span class="hljs-number">1</span>.<span class="hljs-number">0</span>      <span class="hljs-number">1999</span>  RFC <span class="hljs-number">2246</span>，本质是 SSL <span class="hljs-number">3</span>.<span class="hljs-number">1</span>，已淘汰<br><span class="hljs-attribute">TLS</span> <span class="hljs-number">1</span>.<span class="hljs-number">1</span>      <span class="hljs-number">2006</span>  RFC <span class="hljs-number">4346</span>，已淘汰<br><span class="hljs-attribute">TLS</span> <span class="hljs-number">1</span>.<span class="hljs-number">2</span>      <span class="hljs-number">2008</span>  RFC <span class="hljs-number">5246</span>，至今的兼容底线，仍算安全<br><span class="hljs-attribute">TLS</span> <span class="hljs-number">1</span>.<span class="hljs-number">3</span>      <span class="hljs-number">2018</span>  RFC <span class="hljs-number">8446</span>，现役主力，大改版<br></code></pre></td></tr></table></figure>
+
+<h2 id="一次-HTTPS-连接的完整解剖（明文视角）"><a href="#一次-HTTPS-连接的完整解剖（明文视角）" class="headerlink" title="一次 HTTPS 连接的完整解剖（明文视角）"></a>一次 HTTPS 连接的完整解剖（明文视角）</h2><p>在浏览器里敲下一个 <code>https://</code> 网址回车，网络上实际发生的事，按顺序是八幕。拿 Wireshark 抓一次自己浏览器的访问对着看最直观（一次典型抓包的前 50 个包大致就是这出戏）：</p>
+<table>
+<thead>
+<tr>
+<th>包区间</th>
+<th>幕</th>
+<th>明文吗</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1–4</td>
+<td>抓包背景噪声</td>
+<td>—</td>
+</tr>
+<tr>
+<td>5–6</td>
+<td><strong>DNS</strong>：问目标域名的 IP</td>
+<td>全明文</td>
+</tr>
+<tr>
+<td>7–9</td>
+<td><strong>TCP 三次握手</strong>，连服务器的 443 端口</td>
+<td>头明文</td>
+</tr>
+<tr>
+<td>10–11</td>
+<td><strong>ClientHello</strong>：客户端亮出支持的全部参数</td>
+<td>明文（这就是它的使命）</td>
+</tr>
+<tr>
+<td>12–17</td>
+<td><strong>ServerHello + ChangeCipherSpec + ApplicationData</strong>：服务器应答，然后——注意——连证书都是<strong>密文</strong>（TLS 1.3 特色）</td>
+<td>半明文半密文</td>
+</tr>
+<tr>
+<td>18–21</td>
+<td><strong>OCSP</strong>：查证书有没有被吊销</td>
+<td>明文</td>
+</tr>
+<tr>
+<td>22–27</td>
+<td>客户端 CCS + 第一个 <strong>HTTP 请求</strong>（已加密）</td>
+<td>密文</td>
+</tr>
+<tr>
+<td>28–39</td>
+<td>HTTP 响应到达</td>
+<td>密文</td>
+</tr>
+<tr>
+<td>40–50</td>
+<td>页面里的 CDN 域名再做一轮 DNS</td>
+<td>全明文</td>
+</tr>
+</tbody></table>
+<p>几个值得咂摸的细节：</p>
+<ul>
+<li>传统 DNS 是明文的——你在访问什么网站，围观者看得一清二楚，这是 DoH（DNS over HTTPS）这几年的动机；</li>
+<li>TLS 记录的<strong>外层头</strong>永远是明文的（协议类型、长度藏不了，见下一节），但 ServerHello 之后的所有握手内容在 1.3 里全部进密文；</li>
+<li>OCSP 单独跑在 HTTP 上查证书吊销状态，也是明文围观点。</li>
+</ul>
+<p>Wireshark 三个实用技能：<code>View → Resolution → Resolve Network Addresses</code> 把 IP 解析成域名（私网地址要手动标）、右键字段 <code>Apply as Filter</code>、以及直接在过滤栏写表达式——比如数一数有多少包是发给目标服务器的：<code>ip.dst == &lt;服务器IP&gt;</code>，过滤栏会直接给出包数。</p>
+<h2 id="记录层：一切数据的信封"><a href="#记录层：一切数据的信封" class="headerlink" title="记录层：一切数据的信封"></a>记录层：一切数据的信封</h2><p>TLS 不直接发消息，所有数据（包括握手本身）都切成不超过 16KB 的块，套进<strong>记录层</strong>（record layer）的信封里：</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs tap">┌────────┬──────────────┬────────┬──────────────────┐<br>│ type   │ legacy_ver   │ length │   payload …      │<br>│<span class="hljs-number"> 1 </span>字节 │<span class="hljs-number"> 2 </span>字节 0x0303│<span class="hljs-number"> 2 </span>字节 │  ≤ 16384+2048    │<br>└────────┴──────────────┴────────┴──────────────────┘<br>type:<span class="hljs-number"> 20 </span>ChangeCipherSpec /<span class="hljs-number"> 21 </span>Alert /<span class="hljs-number"> 22 </span>Handshake /<span class="hljs-number"> 23 </span>ApplicationData<br></code></pre></td></tr></table></figure>
+
+<p>信封皮是明文的——type 和长度暴露是设计上的坦荡（流量分析本来就防不了），但内容全在 payload 里加密。TLS 1.3 还嫌握手期太显眼：ServerHello 之后的握手消息外面统一套 <code>type=23</code>（ApplicationData）的皮，围观者连”这是证书还是密钥交换”都分不出来。</p>
+<h2 id="ClientHello-ServerHello：互亮底牌"><a href="#ClientHello-ServerHello：互亮底牌" class="headerlink" title="ClientHello &#x2F; ServerHello：互亮底牌"></a>ClientHello &#x2F; ServerHello：互亮底牌</h2><p>握手第一步，双方各自报家门。<strong>ClientHello</strong> 的关键字段：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>内容</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>legacy_version</td>
+<td>客户端希望的最高版本</td>
+<td>真实协商走 supported_versions 扩展</td>
+</tr>
+<tr>
+<td><strong>random</strong></td>
+<td>32 字节新鲜随机数</td>
+<td>进密钥派生 + 防重放，人手一个</td>
+</tr>
+<tr>
+<td>legacy_session_id</td>
+<td>会话恢复用</td>
+<td>1.2 时代的复活卡</td>
+</tr>
+<tr>
+<td><strong>cipher_suites</strong></td>
+<td>客户端支持的套件列表</td>
+<td>按优先级排序，全亮出来</td>
+</tr>
+<tr>
+<td>legacy_compression_methods</td>
+<td>压缩方法</td>
+<td>基本只剩 null（CRIME 攻击杀死了压缩）</td>
+</tr>
+<tr>
+<td><strong>extensions</strong></td>
+<td>扩展列表</td>
+<td>SNI（要访问哪个域名）、key_share（1.3 的 DH 公钥）、signature_algorithms、ALPN……</td>
+</tr>
+</tbody></table>
+<p><strong>ServerHello</strong> 逐项回拍：从套件列表里选一个、给出自己的 32 字节 Random、（1.3）回自己的 key_share 公钥。双方从这一刻起就有了共同的原料：两个 Random + 选定的算法 + DH 共享密钥。</p>
+<p>两个 Random 的双重身份值得单独记：它们既是握手新鲜度的保证（防重放），又直接作为密钥派生的输入（<code>master_secret</code> 公式里能看到它们）——协议设计里”一个字段干两件事”的节俭美学。</p>
+<h2 id="密码套件：一串名字四件事"><a href="#密码套件：一串名字四件事" class="headerlink" title="密码套件：一串名字四件事"></a>密码套件：一串名字四件事</h2><p>ServerHello 选定的那个”套件”（cipher suite）决定接下来整条连接用什么算法。以 OpenSSL 风格命名解剖：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">ECDHE - RSA - AES128 - GCM - SHA256<br>  │      │      │      │      │<br>  │      │      │      │      └─ 握手认证<span class="hljs-string">/PRF</span> 用的哈希<br>  │      │      │      └─ 加密模式（AEAD）<br>  │      │      └─ 对称加密算法+密钥长<br>  │      └─ 证书的签名算法（认证）<br>  └─ 密钥交换算法<br></code></pre></td></tr></table></figure>
+
+<p>IANA 官方写法是 <code>TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256</code>，一个意思。四个坑位依次回答四个问题：<strong>怎么换密钥、怎么验身份、怎么加密、怎么保完整</strong>。</p>
+<p>两个易混点：</p>
+<ul>
+<li>第二段（RSA）指证书公钥用来<strong>签名认证</strong>，不是用来加密数据——看到 <code>ECDHE-RSA</code> 就该反应过来”RSA 密钥交换 + RSA 认证”两码事，Bare RSA 套件（<code>TLS_RSA_WITH_*</code>）里 RSA 才是真·密钥交换，那是下一个坑位的故事；</li>
+<li>TLS 1.3 的套件名突然变短：<code>TLS_AES_128_GCM_SHA256</code> 只剩两段——因为 1.3 把密钥交换算法从套件里拆走了（全员 (EC)DHE&#x2F;PSK，靠 key_share&#x2F;psk 扩展协商），认证算法也不再看套件脸色。套件名瘦身本身就是版本演进的路标。</li>
+</ul>
+<p>查套件参数用 <a target="_blank" rel="noopener" href="https://ciphersuite.info/">ciphersuite.info</a>，一眼看清安全性评级。探测某个服务器支持什么套件，命令行一条：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">openssl s_client -connect cryptohack.org:443 -servername cryptohack.org -tls1_2 &lt;/dev/null | grep -E <span class="hljs-string">&quot;Cipher|Protocol&quot;</span><br><span class="hljs-comment"># 或者 curl 限版本: curl -v --tls-max 1.2 https://cryptohack.org 2&gt;&amp;1 | grep -i cipher</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="证书与-CA：信任的链条"><a href="#证书与-CA：信任的链条" class="headerlink" title="证书与 CA：信任的链条"></a>证书与 CA：信任的链条</h2><p>对称密钥好办，难的是开头那句”对面确实是它声称的那个人”。如果我连咖啡店 WiFi 都不敢信，那 ServerHello 里自称某域名的公钥凭什么信？</p>
+<p>答案是<strong>证书</strong>（certificate）：服务器公钥 + 域名身份，由 <strong>CA</strong>（Certificate Authority，证书颁发机构）用私钥签名背书。而 CA 的公钥又由更上一级 CA 签名……一路签到一个预装在你操作系统&#x2F;浏览器里的<strong>根 CA</strong>。验证证书就是沿着这条链爬到根——根是信任的起点，全网一共百来个，都是过审的商业机构（DigiCert、Sectigo 这类）。</p>
+<p>配套的运维问题：私钥泄露了怎么办？证书有<strong>有效期</strong>，紧急作废靠吊销机制——CRL（定期发的吊销清单）和 OCSP（在线实时查，就是解剖表里 18–21 包那段）。双向认证场景（mTLS）里客户端也掏证书，服务端同样验链——企业内网 API 常这么玩。</p>
+<p>证书的坑很多（弱签名算法、链校验漏洞、CT 日志……），留待以后细讲。先立住主干：<strong>证书 &#x3D; 身份+公钥的 CA 背书，链爬到根为止</strong>。</p>
+<h2 id="密钥交换：从-RSA-到-EC-DHE"><a href="#密钥交换：从-RSA-到-EC-DHE" class="headerlink" title="密钥交换：从 RSA 到 (EC)DHE"></a>密钥交换：从 RSA 到 (EC)DHE</h2><p>终于到 TLS 的灵魂问题：双方怎么在明文信道上商量出一个窃听者拿不到的密钥？</p>
+<p><strong>方案一：RSA 密钥交换（TLS 1.2 遗产，正在退场）</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs css">客户端: 随机生成 <span class="hljs-number">48</span>B premaster ──用证书公钥加密──&gt; ClientKeyExchange ──&gt; 服务器<br>双方:   master_secret = <span class="hljs-built_in">PRF</span>(premaster, <span class="hljs-string">&quot;master secret&quot;</span>, ClientRandom ‖ ServerRandom)<br></code></pre></td></tr></table></figure>
+
+<p>简单直接，但有宗罪：<strong>没有前向保密</strong>（forward secrecy）。攻击者今天把密文全录下来存着——假设十年后拿到了服务器私钥（泄露、下线、被黑），历史流量<strong>全部</strong>解开。情报机构就是这么干的：录了再说，钥匙慢慢等。这叫”先存后解”（store now, decrypt later）。</p>
+<p><strong>方案二：临时 DH（(E)phemeral (EC)DHE，现役标准）</strong></p>
+<p>Diffie–Hellman 的魔力在于：双方各持一个<strong>临时</strong>私钥，公钥明文互换，各自算出同一个共享密钥——窃听者拿到全部交换报文也算不出来。关键是”临时”二字：这一对密钥用完即焚，会话结束私钥就删。哪怕日后服务器证书私钥泄露，录下来的流量里只有明文的 DH 公钥，<strong>往事依然是往事</strong>。前向保密的本质：会话密钥的安全不依赖任何长期秘密。</p>
+<p>分工也就清晰了：<strong>证书密钥对只负责认证（签名证明”我是我”），从不碰会话密钥；会话密钥由临时 DH 一手包办。</strong></p>
+<p>TLS 1.3 的手术：直接删掉 ClientKeyExchange 消息和整个静态 RSA 交换，只留 (EC)DHE（和少量 PSK）；DH 公钥塞进 ClientHello 的 key_share 扩展里<strong>随首包一起发</strong>——握手从 2-RTT 砍到 1-RTT。顺带地，折腾了 RSA 密钥交换二十年的 Bleichenbacher 填塞预言机一族攻击（→ DROWN → ROBOT）物理失去宿主。1.3 的密钥派生也换了引擎：PRF 换成 HKDF 阶梯（Early → Handshake → Master 三级 Extract，每一级 Derive-Secret 都把当时的 transcript 哈希焊进密钥，详见 RFC 8446 §7.1）。</p>
+<h2 id="TLS-1-2-vs-1-3：一张表看清"><a href="#TLS-1-2-vs-1-3：一张表看清" class="headerlink" title="TLS 1.2 vs 1.3：一张表看清"></a>TLS 1.2 vs 1.3：一张表看清</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>TLS 1.2</th>
+<th>TLS 1.3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>证书传输</td>
+<td><strong>明文</strong>，围观者看得到服务器身份</td>
+<td>密文（ServerHello 后全加密）</td>
+</tr>
+<tr>
+<td>握手往返</td>
+<td>2-RTT</td>
+<td>1-RTT（PSK 恢复可 0-RTT）</td>
+</tr>
+<tr>
+<td>密钥交换</td>
+<td>RSA &#x2F; 静态 DH &#x2F; DHE &#x2F; PSK</td>
+<td>只剩 (EC)DHE &#x2F; PSK，强制前向保密</td>
+</tr>
+<tr>
+<td>ClientKeyExchange</td>
+<td>有</td>
+<td>删除（key_share 进 ClientHello）</td>
+</tr>
+<tr>
+<td>对称加密</td>
+<td>CBC &#x2F; RC4 &#x2F; AEAD 混杂</td>
+<td>AEAD only</td>
+</tr>
+<tr>
+<td>套件命名</td>
+<td>四段式 ECDHE-RSA-AES128-GCM-SHA256</td>
+<td>两段式 TLS_AES_128_GCM_SHA256</td>
+</tr>
+<tr>
+<td>密钥派生</td>
+<td>PRF（HMAC- SHA256&#x2F;384）</td>
+<td>HKDF 阶梯 + transcript 绑定</td>
+</tr>
+</tbody></table>
+<p>证书加密这一条的现实冲击：企业网络安全设备（DLP、被动审计）过去靠读明文证书+私钥解密的”合法中间人”套路在 1.3 面前集体失效，只能转向终端装信任根的主动代理——这也是 RFC 系列文档 <em>Industry Concerns about TLS 1.3</em> 记录的那场攻防。</p>
+<h2 id="Finished：握手的最终裁决"><a href="#Finished：握手的最终裁决" class="headerlink" title="Finished：握手的最终裁决"></a>Finished：握手的最终裁决</h2><p>握手四阶段：<strong>交换能力 → 验证身份 → 协商密钥 → 校验完整性</strong>。最后一步的主角是三个认证消息：</p>
+<ul>
+<li><strong>Certificate</strong>：证书链，身份的载体（mTLS 时客户端也发一份）；</li>
+<li><strong>CertificateVerify</strong>：服务器用证书私钥<strong>对到目前为止的整个握手</strong>签名——证明它真的持有证书对应的私钥，而不是转发别人的证书。TLS 1.2 的实现没把此前所有消息都盖进签名范围，是个被 1.3 修掉的弱点；</li>
+<li><strong>Finished</strong>：双向的最终校验。双方各发一个 <code>verify_data</code>，对全部握手消息做总签证。</li>
+</ul>
+<p>verify_data 的算法（TLS 1.3，RFC 8446 §4.4.4）：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-type">finished_key</span> <span class="hljs-operator">=</span> <span class="hljs-variable">HKDF</span><span class="hljs-operator">-</span><span class="hljs-built_in">Expand</span><span class="hljs-operator">-</span><span class="hljs-built_in">Label</span><span class="hljs-punctuation">(</span>本侧 <span class="hljs-type">handshake_traffic</span><span class="hljs-type">_secret</span><span class="hljs-operator">,</span> <span class="hljs-string">&quot;finished&quot;</span><span class="hljs-operator">,</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-operator">,</span> <span class="hljs-built_in">Hash</span>长度<span class="hljs-punctuation">)</span><br><span class="hljs-type">verify_data</span>  <span class="hljs-operator">=</span> <span class="hljs-variable">HMAC</span><span class="hljs-punctuation">(</span><span class="hljs-type">finished_key</span><span class="hljs-operator">,</span> <span class="hljs-variable">Transcript</span><span class="hljs-operator">-</span><span class="hljs-built_in">Hash</span><span class="hljs-punctuation">(</span><span class="hljs-variable">Handshake</span> <span class="hljs-built_in">Context</span><span class="hljs-operator">,</span> <span class="hljs-variable">Certificate</span><span class="hljs-operator">*,</span> <span class="hljs-variable">CertificateVerify</span><span class="hljs-operator">*</span><span class="hljs-punctuation">)</span><span class="hljs-punctuation">)</span><br></code></pre></td></tr></table></figure>
+
+<p><code>Transcript-Hash</code> 把握手消息（不含记录层头）按线上字节序拼起来整体哈希。这个设计叫 <strong>transcript 绑定</strong>：密钥和校验值都是从”对话历史”派生的，中间人篡改任何一条消息——哪怕只是把客户端支持的套件列表改弱一点（降级攻击）——Finished 必然对不上，连接当场翻脸。</p>
+<p>想检验自己理解到不到位，拿 RFC 8448（官方 Example Handshake Traces）逐字段对拍一次完整握手，是最硬的手段。</p>
 <h2 id="NSS-Key-Log-Format"><a href="#NSS-Key-Log-Format" class="headerlink" title="NSS Key Log Format"></a>NSS Key Log Format</h2><p>解密 TLS 流量的那把”钥匙”</p>
 <p>NSS Key Log Format 最早由 Mozilla 的密码库 NSS 定义，如今是解密 TLS 流量的事实标准（de facto standard）——它并非任何 RFC 规定的官方协议，却几乎被整个生态采用。<br>格式本身非常简单：纯文本，每行三个空格分隔的字段 <code>&lt;标签&gt; &lt;ClientRandom&gt; &lt;密钥&gt;</code>。</p>
 <ul>
@@ -294,7 +513,14 @@
 <p>示例：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">CLIENT_HANDSHAKE_TRAFFIC_SECRET 210cb7af9f5d...42f663c6 f985875a9330...0a07f17<br>SERVER_HANDSHAKE_TRAFFIC_SECRET 210cb7af9f5d...42f663c6 654148cc554d...2887d7<br></code></pre></td></tr></table></figure>
 
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] IETF. RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8446">https://datatracker.ietf.org/doc/html/rfc8446</a>.<br>[2] Mozilla. NSS Key Log Format[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format">https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format</a>.<br>[3] Wireshark Wiki. TLS[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://wiki.wireshark.org/TLS">https://wiki.wireshark.org/TLS</a>.</p>
+<h2 id="解密-TLS-流量的三条路"><a href="#解密-TLS-流量的三条路" class="headerlink" title="解密 TLS 流量的三条路"></a>解密 TLS 流量的三条路</h2><p>把协议看完，解密手里的一段 TLS 流量其实就三条路，按适用条件排列：</p>
+<ol>
+<li><strong>RSA 私钥</strong>：只对静态 RSA 密钥交换的 TLS 1.2 流量有效；遇到 (EC)DHE 直接歇菜——这是”我明明有服务器私钥却解不开”的经典翻车原因；</li>
+<li><strong>NSS Key Log</strong>：客户端主动导出的会话密钥，1.2&#x2F;1.3 通吃，前向保密时代的<strong>唯一</strong>被动解密入口（即上一节的 keylog 文件）；</li>
+<li><strong>主动 MITM</strong>：终端装信任根，代理冒充服务器——1.3 时代企业监控的唯一出路，属于攻击者视角的玩法了。</li>
+</ol>
+<p>Wireshark 的入口统一在 <code>Preferences → Protocols → TLS</code>：RSA 私钥填 Key File，keylog 填 (Pre)-Master-Secret log file。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] IETF. RFC 8446: The Transport Layer Security (TLS) Protocol Version 1.3[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8446">https://datatracker.ietf.org/doc/html/rfc8446</a>.<br>[2] IETF. RFC 5246: The Transport Layer Security (TLS) Protocol Version 1.2[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc5246">https://datatracker.ietf.org/doc/html/rfc5246</a>.<br>[3] IETF. RFC 8448: Example Handshake Traces for TLS 1.3[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/html/rfc8448">https://datatracker.ietf.org/doc/html/rfc8448</a>.<br>[4] Michael Driscoll. The Illustrated TLS 1.3 Connection[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://tls13.xargs.org/">https://tls13.xargs.org/</a>.<br>[5] Michael Driscoll. The Illustrated TLS 1.2 Connection[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://tls12.xargs.org/">https://tls12.xargs.org/</a>.<br>[6] Wireshark Wiki. TLS[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://wiki.wireshark.org/TLS">https://wiki.wireshark.org/TLS</a>.<br>[7] Mozilla. NSS Key Log Format[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format">https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/Key_Log_Format</a>.<br>[8] IETF. Industry Concerns about TLS 1.3[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://datatracker.ietf.org/doc/draft-ietf-tls-tls13-bs/">https://datatracker.ietf.org/doc/draft-ietf-tls-tls13-bs/</a>.<br>[9] ciphersuite.info[EB&#x2F;OL].<br><a target="_blank" rel="noopener" href="https://ciphersuite.info/">https://ciphersuite.info/</a>.</p>
 
                 
               </div>
@@ -340,7 +566,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>October 26, 2026</div>
+          <div>October 27, 2026</div>
         </div>
       
       

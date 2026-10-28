@@ -19,12 +19,12 @@
   <meta name="author" content="Baymax">
   <meta name="keywords" content="">
   
-    <meta name="description" content="ECC算法ECC算法是最基础，也是最经典的椭圆曲线算法之一  算法基础过程：	1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2&#x3D;x^3+ax+b$），取曲线上一点P，作为基点	2、随机选定一个数k作为私钥，并生成公钥Q &#x3D; k * P（这里的乘法是曲线上的乘法，不是正常的代数乘法）	3、加密：选取一个随机数r，明文为m，用下面的公式生成密文 c，	加密公式：$c&amp;">
+    <meta name="description" content="ECC算法ECC算法是最基础，也是最经典的椭圆曲线算法之一  算法基础过程：	1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2&#x3D;x^3+ax+b$），取曲线上一点P，作为基点	2、随机选定一个数k作为私钥，并生成公钥Q &#x3D; k * P（这里的乘法是曲线上的乘法，不是正常的代数乘法）	3、加密：选取一个随机数r，明文为m，用下面的公式生成密文 c，	加密公式：$c&#x3D;(rP,m">
 <meta property="og:type" content="article">
 <meta property="og:title" content="椭圆曲线算法_攻击">
 <meta property="og:url" content="https://baymax-fools.github.io/2026/03/12/crypto/%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E7%AE%97%E6%B3%95-%E6%94%BB%E5%87%BB/index.html">
 <meta property="og:site_name" content="Baymax&#39; blogs">
-<meta property="og:description" content="ECC算法ECC算法是最基础，也是最经典的椭圆曲线算法之一  算法基础过程：	1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2&#x3D;x^3+ax+b$），取曲线上一点P，作为基点	2、随机选定一个数k作为私钥，并生成公钥Q &#x3D; k * P（这里的乘法是曲线上的乘法，不是正常的代数乘法）	3、加密：选取一个随机数r，明文为m，用下面的公式生成密文 c，	加密公式：$c&amp;">
+<meta property="og:description" content="ECC算法ECC算法是最基础，也是最经典的椭圆曲线算法之一  算法基础过程：	1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2&#x3D;x^3+ax+b$），取曲线上一点P，作为基点	2、随机选定一个数k作为私钥，并生成公钥Q &#x3D; k * P（这里的乘法是曲线上的乘法，不是正常的代数乘法）	3、加密：选取一个随机数r，明文为m，用下面的公式生成密文 c，	加密公式：$c&#x3D;(rP,m">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://baymax-fools.github.io/photos/%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E7%AE%97%E6%B3%95-%E6%94%BB%E5%87%BB/1.png">
 <meta property="article:published_time" content="2026-03-12T04:40:19.000Z">
@@ -240,7 +240,7 @@
         
         
         
-          159 mins
+          158 mins
         
       </span>
     
@@ -284,9 +284,9 @@
                 
                 <h1 id="ECC算法"><a href="#ECC算法" class="headerlink" title="ECC算法"></a>ECC算法</h1><p><strong>ECC算法是最基础，也是最经典的椭圆曲线算法之一</strong></p>
 <hr>
-<p><strong>算法基础过程：</strong><br>	1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2&#x3D;x^3+ax+b$），取曲线上一点<code>P</code>，作为基点<br>	2、随机选定一个数<code>k</code>作为私钥，并生成公钥<code>Q = k * P</code>（这里的乘法是曲线上的乘法，不是正常的代数乘法）<br>	3、<strong>加密</strong>：选取一个随机数<code>r</code>，明文为<code>m</code>，用下面的公式生成密文 <code>c</code>，<br>	加密公式：$c&#x3D;(rP,m+rQ)$<br>	4、<strong>解密</strong>：$m+rQ-k(rP)$ <strong>&#x3D;</strong> $m+r(kP)-k(rP)$ <strong>&#x3D;</strong> $m$ </p>
+<p><strong>算法基础过程：</strong><br>	1、选一条椭圆曲线 $E_p(a,b)$ （ECC选取的曲线为 $y^2=x^3+ax+b$），取曲线上一点<code>P</code>，作为基点<br>	2、随机选定一个数<code>k</code>作为私钥，并生成公钥<code>Q = k * P</code>（这里的乘法是曲线上的乘法，不是正常的代数乘法）<br>	3、<strong>加密</strong>：选取一个随机数<code>r</code>，明文为<code>m</code>，用下面的公式生成密文 <code>c</code>，<br>	加密公式：$c=(rP,m+rQ)$<br>	4、<strong>解密</strong>：$m+rQ-k(rP)$ <strong>&#x3D;</strong> $m+r(kP)-k(rP)$ <strong>&#x3D;</strong> $m$ </p>
 <hr>
-<p>基础（相关公式）：<br>有限域GF(p)上的椭圆曲线 $y^2&#x3D;x^3+ax+b$ ,$R &#x3D; P + Q$ :<br>$X_r​&#x3D;(λ^2−X_p​−X_q​)\mod p$<br>$Y_r​&#x3D;(λ(X_p​−X_r​)−Y_p​) \mod p$<br>$λ&#x3D;(Y_q​−Y_p​)&#x2F;(X_q​−X_p​) \mod p$  (若p!&#x3D;Q)<br>$λ&#x3D;(3X_p^2​+a)&#x2F;2Y_p​\mod p$  (若P&#x3D;Q)</p>
+<p>基础（相关公式）：<br>有限域GF(p)上的椭圆曲线 $y^2=x^3+ax+b$ ,$R = P + Q$ :<br>$X_r​=(λ^2−X_p​−X_q​)\mod p$<br>$Y_r​=(λ(X_p​−X_r​)−Y_p​) \mod p$<br>$λ=(Y_q​−Y_p​)/(X_q​−X_p​) \mod p$  (若p!&#x3D;Q)<br>$λ=(3X_p^2​+a)/2Y_p​\mod p$  (若P&#x3D;Q)</p>
 <h1 id="椭圆曲线常用攻击方法"><a href="#椭圆曲线常用攻击方法" class="headerlink" title="椭圆曲线常用攻击方法"></a>椭圆曲线常用攻击方法</h1><h2 id="smart’s-Attack"><a href="#smart’s-Attack" class="headerlink" title="smart’s Attack"></a>smart’s Attack</h2><p><strong>原理：攻击异常曲线（阶就等于p的曲线，本身就是个异常子群），smart‘s 攻击利用了椭圆曲线上的点可以通过一个同态映射（有限域同态映射）映射到有限域的模数p的加法群上<br>在加法群上解ECDLP会简单一点</strong></p>
 <p><strong>椭圆曲线的 p-adic 提升与形式群映射:</strong></p>
 <p>椭圆曲线点 $P \in E(\mathbb{F}_p)$</p>
@@ -294,7 +294,7 @@
 <p>p-adic 点 $P_{\mathbb{Q}_p} \in E(\mathbb{Q}_p)$</p>
 <p>↓（乘以 p）</p>
 <p>$p \cdot P_{\mathbb{Q}_p} \in E_1(\mathbb{Q}_p)$ [形式群]</p>
-<p>↓（取形式参数 $t &#x3D; -x&#x2F;y$）</p>
+<p>↓（取形式参数 $t = -x/y$）</p>
 <p>$\phi_P \in p\mathbb{Z}_p \subset \mathbb{Q}_p$</p>
 <p>↓（除以 p 并模 p）</p>
 <p>最终元素 $\in \mathbb{F}_p^+$</p>
@@ -305,20 +305,37 @@
 
 <p><strong>Pohlig-Hellman算法思想：</strong></p>
 <p>设乘法群 $Z_p^*$，其阶为 $n$。</p>
-<p>假设 $p$ 为大质数，所以 $n &#x3D; \phi(p) &#x3D; p - 1$</p>
-<p>设其质因数分解为：$n &#x3D; q_1^{e_1} q_2^{e_2} q_3^{e_3} \cdots q_k^{e_k}$</p>
+<p>假设 $p$ 为大质数，所以 $n = \phi(p) = p - 1$</p>
+<p>设其质因数分解为：$n = q_1^{e_1} q_2^{e_2} q_3^{e_3} \cdots q_k^{e_k}$</p>
 <p>现在有如下等式：</p>
-<p>$$<br>h &#x3D; g^x \pmod{p}<br>$$</p>
+<p>$$
+h = g^x \pmod{p}
+$$</p>
 <p>两边同时求 $\frac{n}{q_i^{e_i}}$ 次幂可以得到：</p>
-<p>$$<br>h^{\frac{n}{q_i^{e_i}}} &#x3D; (g^x)^{\frac{n}{q_i^{e_i}}} \pmod{p}<br>$$</p>
+<p>$$
+h^{\frac{n}{q_i^{e_i}}} = (g^x)^{\frac{n}{q_i^{e_i}}} \pmod{p}
+$$</p>
 <p>右边式子的 $x$ 可以提出来得到：</p>
-<p>$$<br>h^{\frac{n}{q_i^{e_i}}} &#x3D; \left(g^{\frac{n}{q_i^{e_i}}}\right)^x \pmod{p}<br>$$</p>
-<p>假设 $h_i &#x3D; h^{\frac{n}{q_i^{e_i}}}$，$g_i &#x3D; g^{\frac{n}{q_i^{e_i}}}$，可以得到：</p>
-<p>$$<br>h_i &#x3D; g_i^x \pmod{p}<br>$$</p>
+<p>$$
+h^{\frac{n}{q_i^{e_i}}} = \left(g^{\frac{n}{q_i^{e_i}}}\right)^x \pmod{p}
+$$</p>
+<p>假设 $h_i = h^{\frac{n}{q_i^{e_i}}}$，$g_i = g^{\frac{n}{q_i^{e_i}}}$，可以得到：</p>
+<p>$$
+h_i = g_i^x \pmod{p}
+$$</p>
 <p>因为 $g_i$ 的阶为 $q_i^{e_i}$，所以上面的等式就是在一个 $q_i^{e_i}$ 阶的子群上求离散对数，这样这个离散对数的范围就变小了，可以尝试求解这个离散对数，满足等式的解都模 $q_i^{e_i}$ 同余<br>设其中一个解 $a_i$，那么解可以表示为：</p>
-<p>$$<br>x \equiv a_i \pmod{q_i^{e_i}}<br>$$</p>
+<p>$$
+x \equiv a_i \pmod{q_i^{e_i}}
+$$</p>
 <p>所以对于每一个 $i(1 \leq i \leq k)$，都做上述操作的话，那么就会得到如下的方程组：</p>
-<p>$$<br>\begin{cases}<br>x \equiv a_1 \pmod{q_1^{e_1}} \<br>x \equiv a_2 \pmod{q_2^{e_2}} \<br>\vdots \<br>x \equiv a_k \pmod{q_k^{e_k}}<br>\end{cases}<br>$$</p>
+<p>$$
+\begin{cases}
+x \equiv a_1 \pmod{q_1^{e_1}} \\
+x \equiv a_2 \pmod{q_2^{e_2}} \\
+\vdots \\
+x \equiv a_k \pmod{q_k^{e_k}}
+\end{cases}
+$$</p>
 <p>通过剩余定理可以求出方程组的解。</p>
 <p><strong>例题：</strong></p>
 <figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs clean">#Alice do this<br>p=<span class="hljs-number">14050339</span><br>a=<span class="hljs-number">1</span><br>b=<span class="hljs-number">3243167</span><br>E = EllipticCurve(GF(p),[a,b])<br>G=E(<span class="hljs-number">7112688</span>,<span class="hljs-number">7410262</span>)<br>k=random.randrange(<span class="hljs-number">1</span>,G.order())<br>K=k*G<br>print(K)<br>#(<span class="hljs-number">6562993</span> : <span class="hljs-number">2753874</span> : <span class="hljs-number">1</span>)<br>######################################<br>######################################<br>#Bob do this<br><span class="hljs-keyword">import</span> random<br>flag=<span class="hljs-string">&quot;0xGame&#123;xxxxxxxx&#125;&quot;</span><br>table=<span class="hljs-string">&#x27;abcdefghijklmnopqrstuvwxyz&#x27;</span><br>m=flag[<span class="hljs-number">7</span>:<span class="hljs-number">-1</span>]<br>m1=m[:<span class="hljs-number">4</span>]<br>m2=m[<span class="hljs-number">4</span>:]<br>m_1=<span class="hljs-string">&#x27;&#x27;</span><br>m_2=<span class="hljs-string">&#x27;&#x27;</span><br>for i <span class="hljs-keyword">in</span> m1:<br>    s=str(table.index(i)+<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">if</span> len(s)&lt;<span class="hljs-number">2</span>:<br>        s=<span class="hljs-string">&#x27;0&#x27;</span>+s<br>    m_1+=s<br>for i <span class="hljs-keyword">in</span> m2:<br>    s=str(table.index(i)+<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">if</span> len(s)&lt;<span class="hljs-number">2</span>:<br>        s=<span class="hljs-string">&#x27;0&#x27;</span>+s<br>    m_2+=s<br>x=int(m_1)<br>y=int(m_2)<br>P=E(x,y)<br>r=random.randrange(<span class="hljs-number">1</span>,G.order())<br>C1=P+r*K<br>C2=r*G<br>print(C1)<br>#(<span class="hljs-number">3095063</span> : <span class="hljs-number">1465594</span> : <span class="hljs-number">1</span>)<br>print(C2)<br>#(<span class="hljs-number">6437074</span> : <span class="hljs-number">4385056</span> : <span class="hljs-number">1</span>)<br>######################################<br>######################################<br>#Eva wants to know the flag.<br>#Can you help Eva?<br><br></code></pre></td></tr></table></figure>
