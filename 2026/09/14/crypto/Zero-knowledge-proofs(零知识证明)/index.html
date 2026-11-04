@@ -30,8 +30,8 @@
 <meta property="article:published_time" content="2026-09-14T06:48:44.000Z">
 <meta property="article:modified_time" content="2026-11-03T06:55:19.127Z">
 <meta property="article:author" content="Baymax">
-<meta property="article:tag" content="crypto">
 <meta property="article:tag" content="密码协议">
+<meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://baymax-fools.github.io/photos/Zero-knowledge-proofs(%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E)/1.png">
   
@@ -302,7 +302,7 @@
 <li><strong>见证 witness</strong>：满足关系的秘密 $w$，即 $g^w = y \bmod p$（$y$ 关于 $g$ 的离散对数）</li>
 <li>合起来记作 $((p,q,g,y), w) \in R_{dlog}$</li>
 </ul>
-<p>注意：<strong>“证明知道 witness” ≠ “证明 statement 为真”</strong>。statement 是公开的，谁都知道它为真；ZKP 证明的是”我脑子里有那个满足关系的 $w$”。这类证明叫 <strong>proof of knowledge（知识证明）</strong>。</p>
+<p>注意：<strong>“证明知道 witness” ≠ “证明 statement 为真”</strong>。statement 是公开的，谁都知道它为真；ZKP 证明的是”我脑子里有那个满足关系的 $w$“。这类证明叫 <strong>proof of knowledge（知识证明）</strong>。</p>
 <h2 id="Schnorr-协议与-Σ-协议"><a href="#Schnorr-协议与-Σ-协议" class="headerlink" title="Schnorr 协议与 Σ-协议"></a>Schnorr 协议与 Σ-协议</h2><p><code>Schnorr</code> 给出了证明”我知道 $y$ 的离散对数”的交互协议。P、V 之间来回<strong>三条消息</strong>，消息流程画出来像希腊字母 Σ，所以这类协议统称 <strong>Σ-协议</strong>。</p>
 <p>参数：公开 $y = g^w \bmod p$，秘密为 $w$。</p>
 <p>流程（三消息形式）：</p>
@@ -326,19 +326,19 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 已知同一 a 下两组被接受的 (e, z)，直接提取 w</span><br><span class="hljs-keyword">from</span> Crypto.Util.number <span class="hljs-keyword">import</span> inverse<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">extract_w</span>(<span class="hljs-params">e1, z1, e2, z2, q</span>):<br>    <span class="hljs-keyword">return</span> (z1 - z2) * inverse(e1 - e2, q) % q<br></code></pre></td></tr></table></figure>
 
 <p>注：<strong>Soundness vs Special Soundness</strong>。普通可靠性说：不知道 $w$ 的 P 骗过 V 的概率不超过 $1/2^t$（挑战空间大小分之一）。特殊可靠性是更强的性质：它直接蕴含普通可靠性（不知道 $w$ 就答不了两个不同的 $e$，单轮成功全凭运气），还额外送一个 <strong>witness 提取器</strong>——后面 Fiat-Shamir 的安全证明、攻击者的”爆私钥”，全靠它。</p>
-<p>再补一个”证明知识”的角度：承诺 $a$ 发出后，能对<strong>一个</strong> $e$ 给出合法 $z$，可能只是运气（$1/2^t$）；能对<strong>两个不同</strong> $e$ 都给出合法 $z$，就等价于本地能产出两份接受转录，等价于能算出 $w$。所以&quot;能以不可忽略概率说服 V&quot; ⇒ &quot;$w$（或算出它的材料）就在 P 脑子里”——这就是”证明知识”的形式化含义（Bellare–Goldreich ‘92 的 extractor 定义）。</p>
+<p>再补一个”证明知识”的角度：承诺 $a$ 发出后，能对<strong>一个</strong> $e$ 给出合法 $z$，可能只是运气（$1/2^t$）；能对<strong>两个不同</strong> $e$ 都给出合法 $z$，就等价于本地能产出两份接受转录，等价于能算出 $w$。所以”能以不可忽略概率说服 V” ⇒ “$w$（或算出它的材料）就在 P 脑子里”——这就是”证明知识”的形式化含义（Bellare–Goldreich ‘92 的 extractor 定义）。</p>
 <h3 id="特殊诚实验证者零知识-SHVZK"><a href="#特殊诚实验证者零知识-SHVZK" class="headerlink" title="特殊诚实验证者零知识 SHVZK"></a>特殊诚实验证者零知识 SHVZK</h3><p><strong>SHVZK（Special Honest Verifier Zero-Knowledge）：只要 V 按协议老老实实出随机挑战，它从转录里学不到任何关于 $w$ 的东西。</strong></p>
 <p>证明思路是<strong>模拟器（Simulator）</strong>：不掌握 $w$ 的一方也能造出与真实转录分布一致的”假转录”——把协议倒着走一遍：</p>
 <p>1、先随机选 $z$、$e$<br>2、倒着算承诺 $a = g^z \cdot y^{-e} \bmod p$<br>3、输出 $(a, e, z)$</p>
 <p>这个假转录照样满足验证等式 $g^z = a \cdot y^e$，且与真实转录不可区分。连”作弊者”都能批量造出以假乱真的转录，说明转录本身就不携带关于 $w$ 的信息。</p>
-<p><strong>为什么 V 学不到东西（三条观察的推理链）</strong>：<br>1、V 本地跑模拟器就能造出<strong>任意多份</strong>接受转录 → 单纯”拿到一份转录”不构成任何计算 $w$ 的优势<br>2、诚实 V 的 $e$ 是均匀随机、且与 $a$ 无关的——“先看 $a$ 再选 $e$”实际上影响不了任何东西，这个 $e$ 甚至可以由 P 来随机生成<br>3、所以走完整套协议（先见 $a$、再见 $e$、再见 $z$）相比”只在最后看一眼完整转录”，没多学到任何东西；结合 ①，除了”P 知道 $w$”这个事实，V 一无所获</p>
+<p><strong>为什么 V 学不到东西（三条观察的推理链）</strong>：<br>1、V 本地跑模拟器就能造出<strong>任意多份</strong>接受转录 → 单纯”拿到一份转录”不构成任何计算 $w$ 的优势<br>2、诚实 V 的 $e$ 是均匀随机、且与 $a$ 无关的——“先看 $a$ 再选 $e$“实际上影响不了任何东西，这个 $e$ 甚至可以由 P 来随机生成<br>3、所以走完整套协议（先见 $a$、再见 $e$、再见 $z$）相比”只在最后看一眼完整转录”，没多学到任何东西；结合 ①，除了”P 知道 $w$“这个事实，V 一无所获</p>
 <p>注：模拟器在这里开了挂——它被允许<strong>在看到挑战之后</strong>才选 $a$（现实里 P 必须先承诺 $a$ 再收到 $e$，这个顺序正是安全性的全部支柱）。”给模拟器超能力”是证零知识的标准手法：超能力只消耗在生成过程内部，<strong>不进入 V 的视角</strong>，所以不造成”模拟世界 vs 真实世界”的信息差。其他协议的超能力还有可编程随机预言机、带陷门的公共参考字符串（CRS）等。</p>
 <p>注：带 “Special” 是因为模拟器依赖一个前提——“V 的挑战是均匀随机、且与 $a$ 无关”（这就是”诚实验证者”）。V 一旦不老实（故意挑特定的 $e$），这个性质就没了。这也是后面 Fiat-Shamir 里”挑战如何生成”成为核心安全问题的伏笔。</p>
 <h2 id="Fiat-Shamir-启发式：交互-→-非交互（签名）"><a href="#Fiat-Shamir-启发式：交互-→-非交互（签名）" class="headerlink" title="Fiat-Shamir 启发式：交互 → 非交互（签名）"></a>Fiat-Shamir 启发式：交互 → 非交互（签名）</h2><p>交互协议只能在线用。把它变成签名的标准操作是 <strong>Fiat-Shamir 变换</strong>：</p>
 <p>$e = H(a \parallel m)$</p>
 <p>把”V 随机出挑战”替换成”对承诺和消息一起做哈希”，挑战由 P 自己算出来，不再需要交互。产出的 $(a, z)$ 就是对消息 $m$ 的 <strong>Schnorr 签名</strong>，安全性在随机预言机模型（ROM）下归约。</p>
 <p>为什么哈希能顶替”V 的随机挑战”？关键是<strong>顺序</strong>：只要 $e$ 在 $a$ 定下来之后才被”随机地”确定，这个随机数由谁产生无所谓。P 固然可以本地狂换 $a$ 来”抽签”想要的 $e$（grinding），但由特殊可靠性，不知道 $w$ 的 P 对一个给定 $a$ 最多只能答对一个特定 $e$——每次抽中概率 $1/2^t$，多项式时间内伪造成功的概率可忽略。</p>
-<p><strong>注（CTF 高频考点）：哈希喂了什么非常讲究</strong>。原则上要把<strong>所有公开参数和全部首条消息</strong>都哈进去。FS 类题的经典漏洞就是”没把全部输入哈希进去”——轻则 $e = H(m)$ 不含 $a$（等于先知道 $e$ 再造 $a$，任何人都能伪造，前面”先选 $e$ 再造 $a$”推论说的就是这事），重则没哈某些公开输入，P 可以在算出 $e$ 之后篡改初始数据伪造证明。做题先检查哈希吃了什么。</p>
+<p><strong>注（CTF 高频考点）：哈希喂了什么非常讲究</strong>。原则上要把<strong>所有公开参数和全部首条消息</strong>都哈进去。FS 类题的经典漏洞就是”没把全部输入哈希进去”——轻则 $e = H(m)$ 不含 $a$（等于先知道 $e$ 再造 $a$，任何人都能伪造，前面”先选 $e$ 再造 $a$“推论说的就是这事），重则没哈某些公开输入，P 可以在算出 $e$ 之后篡改初始数据伪造证明。做题先检查哈希吃了什么。</p>
 <p>关键点：此时协议里的随机数 $r$ 摇身一变成了<strong>签名 nonce</strong>——它一旦复用或可预测，上面特殊可靠性那个提取公式就会被攻击者拿过来反着用：</p>
 <ul>
 <li>交互协议里：只有 V 能借”同 $a$ 双挑战”提取 $w$（这叫安全性）</li>
@@ -377,9 +377,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/crypto/" class="print-no-link">#crypto</a>
-      
         <a href="/tags/%E5%AF%86%E7%A0%81%E5%8D%8F%E8%AE%AE/" class="print-no-link">#密码协议</a>
+      
+        <a href="/tags/crypto/" class="print-no-link">#crypto</a>
       
     </div>
   

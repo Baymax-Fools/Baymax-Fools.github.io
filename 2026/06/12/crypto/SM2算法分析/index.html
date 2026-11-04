@@ -300,7 +300,7 @@
 <p>$[k]P$：椭圆曲线上点 $P$ 的 $k$ 倍点</p>
 <p>$H_v(x)$：消息摘要，输出 $v$ 比特，SM2固定用SM3（$v=256$）</p>
 <p>$a, b$：曲线参数，方程为 $y^2 = x^3 + ax + b$，定义在有限域 $F_q$ 上</p>
-<p>$h$：余因子，$h &#x3D; #E(F_q)&#x2F;n$</p>
+<p>$h$：余因子，$h = \#E(F_q)/n$</p>
 <p>再特别说一下 $Z_A$ 这个参数，SM2里到处都是它。用户A有长度为 $entlen_A$ 比特的可辨别标识 $ID_A$（真实场景里可能是邮箱、域名这些），$ENTL_A$ 是由 $entlen_A$ 转换成的两个字节，则</p>
 <p>$Z_A = H_{256}(ENTL_A \Vert ID_A \Vert a \Vert b \Vert x_G \Vert y_G \Vert x_A \Vert y_A)$</p>
 <p>可以看到 $Z_A$ 把用户身份、曲线参数、公钥全部绑在一起过了遍SM3</p>
