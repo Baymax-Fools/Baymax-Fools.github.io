@@ -1,0 +1,872 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#005557">
+  <meta name="author" content="Baymax">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="注：本blog参考《SM9标识密码算法 第1部分：总则》(GB&#x2F;T 38635.1-2020)、《SM9标识密码算法 第2部分：算法》(GB&#x2F;T 38635.2-2020)与python开源库gmssl的实现 国家标准全文公开系统：https:&#x2F;&#x2F;openstd.samr.gov.cn SM9 的完整实现代码我就不放了，pairing 那部分 $\mathbb{F}_{q^{1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SM9算法分析（国密学习5&#x2F;5）">
+<meta property="og:url" content="https://baymax-fools.github.io/2026/07/04/crypto/SM9%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Baymax&#39; blogs">
+<meta property="og:description" content="注：本blog参考《SM9标识密码算法 第1部分：总则》(GB&#x2F;T 38635.1-2020)、《SM9标识密码算法 第2部分：算法》(GB&#x2F;T 38635.2-2020)与python开源库gmssl的实现 国家标准全文公开系统：https:&#x2F;&#x2F;openstd.samr.gov.cn SM9 的完整实现代码我就不放了，pairing 那部分 $\mathbb{F}_{q^{1">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-07-04T02:03:09.000Z">
+<meta property="article:modified_time" content="2026-11-04T03:04:46.755Z">
+<meta property="article:author" content="Baymax">
+<meta property="article:tag" content="crypto">
+<meta property="article:tag" content="国密">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SM9算法分析（国密学习5/5） - Baymax&#39; blogs</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"baymax-fools.github.io","root":"/","version":"1.9.8","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Baymax</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SM9算法分析（国密学习5/5）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-07-04 10:03" pubdate>
+          July 4, 2026 am
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          99 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SM9算法分析（国密学习5/5）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>注：本blog参考《SM9标识密码算法 第1部分：总则》(GB&#x2F;T 38635.1-2020)、《SM9标识密码算法 第2部分：算法》(GB&#x2F;T 38635.2-2020)与python开源库gmssl的实现</p>
+<p>国家标准全文公开系统：<a target="_blank" rel="noopener" href="https://openstd.samr.gov.cn/">https://openstd.samr.gov.cn</a></p>
+<p>SM9 的完整实现代码我就不放了，pairing 那部分 $\mathbb{F}_{q^{12}}$ 塔式运算加 Miller loop 手写出来太长，看着乱（想啃的去看 38635.1 附录B，R-ate pairing 的完整伪代码都在里面），验证代码那节给的是能直接跑的参数检查加标准向量对拍。</p>
+<h1 id="算法基本信息"><a href="#算法基本信息" class="headerlink" title="算法基本信息"></a>算法基本信息</h1><p>SM9 是标识密码算法（IBC，Identity-Based Cryptography），对标的是传统 PKI 那一整套（证书、CA，签名对应 ECDSA，密钥交换对应 ECDH，加密对应 ECIES）。核心区别就一句话：<strong>公钥直接用身份标识</strong>。ID 可以是邮箱、手机号这种随便什么字符串，不用证书来绑定了，私钥由一个 KGC（密钥生成中心）统一算出来发给用户。这个想法是 Shamir 1984 年提出的（IBC 的开山），SM9 就是国密给它的标准化答案，对标 RFC 5091 那一族。</p>
+<p>组成部分（对标着看）：</p>
+<p><strong>(1)</strong> 数字签名（38635.2 第6章），对标 ECDSA</p>
+<p><strong>(2)</strong> 密钥交换（第7章），对标 ECDH</p>
+<p><strong>(3)</strong> 密钥封装（第8章），对标 ECIES 的 KEM</p>
+<p><strong>(4)</strong> 公钥加密（第9章），对标 ECIES</p>
+<p>和 SM2 最大的不同是 SM9 用了<strong>双线性对</strong>（pairing）：$e: G_1 \times G_2 \to G_T$。$G_1$ 是 $E(\mathbb{F}_q)$ 上的 $N$ 阶加法循环群，$G_2$ 是扭曲线 $E'(\mathbb{F}_{q^2})$ 上的 $N$ 阶加法循环群，$G_T$ 是 $\mathbb{F}_{q^{12}}$ 上的 $N$ 阶乘法循环群，嵌入次数 $k=12$。双线性就一条 $e([a]P, [b]Q) = e(P, Q)^{ab}$，SM9 全部协议的正确性都是拿这一条配出来的（后面每个协议我都给一行推完的推导）。随机数生成要求参考 GB&#x2F;T 32915。</p>
+<p><strong>GB&#x2F;T 38635.2中写：</strong> 系统参数组包括曲线识别符 cid、有限域参数、曲线 $E(\mathbb{F}_q)$ 参数、扭曲线参数 $\beta$、素因子 $N$、余因子 $cf$、嵌入次数 $k$、生成元 $P_1$（$G_1$）、生成元 $P_2$（$G_2$）、双线性对识别符 eid 以及可选的 $G_2$ 到 $G_1$ 的同态映射 $\psi$。</p>
+<p>SM9 用的曲线是 BN 曲线（Barreto–Naehrig 2005），$y^2 = x^3 + b$，$a = 0$，这种曲线族天然 $k = 12$，pairing 效率好。</p>
+<h2 id="推荐曲线参数"><a href="#推荐曲线参数" class="headerlink" title="推荐曲线参数"></a>推荐曲线参数</h2><p>$N$（群的阶）：B640000002A3A6F1D603AB4FF58EC74449F2934B18EA8BEEE56EE19CD69ECF25</p>
+<p>$t$（BN 参数）：600000000058F98A</p>
+<p>$q$：B640000002A3A6F1D603AB4FF58EC74521F2934B1A7AEEDBE56F9B27E351457D</p>
+<p>$q = 36t^4 + 36t^3 + 24t^2 + 6t + 1$，$N = 36t^4 + 36t^3 + 18t^2 + 6t + 1$，迹 $tr = 6t^2 + 1$，曲线点数 $\#E(\mathbb{F}_q) = q + 1 - tr = N$，余因子刚好是 1（这个整除关系可以自己拿 python 验，很舒服）。</p>
+<p>$b$：0000000000000000000000000000000000000000000000000000000000000005</p>
+<p>$k$（嵌入次数）：12</p>
+<p>$\beta$（$\mathbb{F}_{q^2}$ 定义多项式 $u^2 = \beta$ 的系数）：-2</p>
+<p>$P_1$（$G_1$ 生成元，在 $E(\mathbb{F}_q)$ 上）：</p>
+<p>$x_1$：93DE051D62BF718FF5ED0704487D01D6E1E4086909DC3280E8C4E4817C66DDDD</p>
+<p>$y_1$：21FE8DDA4F21E607631065125C395BBC1C1C00CBFA6024350C464CD70A3EA616</p>
+<p>$P_2$（$G_2$ 生成元，在扭曲线 $E': y^2 = x^3 + 5u$ 上，坐标是 $\mathbb{F}_{q^2}$ 元素）。这里有个坑要单独说：$\mathbb{F}_{q^2}$ 元素是 $a + bu$ 的形式，<strong>标准里打印是 $u$ 的系数在前一半</strong>，网上好几份资料的顺序还不统一，我抄错了一次，验 $P_2$ 在不在扭曲线上死活不过，用曲线方程把组合全试了一遍才确定下来（下面脚本里我直接写成常数项、$u$ 系数两行，别再踩这个坑）：</p>
+<p>$x_2$ 常数项：3722755292130B08D2AAB97FD34EC120EE265948D19C17ABF9B7213BAF82D65B</p>
+<p>$x_2$ 的 $u$ 系数：85AEF3D078640C98597B6027B441A01FF1DD2C190F5E93C454806C11D8806141</p>
+<p>$y_2$ 常数项：A7CF28D519BE3DA65F3170153D278FF247EFBA98A71A08116215BBA5C999A7C7</p>
+<p>$y_2$ 的 $u$ 系数：17509B092E845C1266BA0D262CBEE6ED0736A96FA347C8BD856DC76B84EBEB96</p>
+<p>cid 是 0x12（普通曲线加扭曲线的意思），eid 是 0x04，表示用 R-ate pairing（01 是 Tate、02 是 Weil、03 是 Ate，都在 38635.1 附录B 里给算法）。</p>
+<p>sage 里定义曲线就两行：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">q</span> = <span class="hljs-number">0</span>xB640000002A3A6F1D603AB4FF58EC74521F2934B1A7AEEDBE56F9B27E351457D<br><span class="hljs-attr">E</span> = EllipticCurve(GF(q), [<span class="hljs-number">0</span>, <span class="hljs-number">5</span>])<br></code></pre></td></tr></table></figure>
+
+<h1 id="数字签名算法"><a href="#数字签名算法" class="headerlink" title="数字签名算法"></a>数字签名算法</h1><h2 id="主密钥和用户私钥"><a href="#主密钥和用户私钥" class="headerlink" title="主密钥和用户私钥"></a>主密钥和用户私钥</h2><p>SM9 的私钥不是用户自己随机生成的，是 KGC 发的。KGC 先生成签名主密钥：随机 $k_s \in [1, N-1]$，算</p>
+<p>$P_{pub\text{-}s} = [k_s]P_2$</p>
+<p>注意这是 $G_2$ 的点，方向别记反了（加密体系那边正好反过来，密钥交换那节再说）。用户 A 的签名私钥：</p>
+<p>$t_1 = (H_1(ID_A \Vert hid, N) + k_s) \bmod N$（$t_1 = 0$ 的话主密钥作废重来，所有用户私钥重发）</p>
+<p>$t_2 = k_s \cdot t_1^{-1} \bmod N$</p>
+<p>$d_{sA} = [t_2]P_1$（$G_1$ 的点，KGC 把它发给用户，$t_2$ 是中间量不外发，从 $d_{sA}$ 反推 $t_2$ 就是解 ECDLP）</p>
+<p>核心恒等式就一条：$t_2 \cdot (H_1(ID_A \Vert hid, N) + k_s) = k_s$。私钥派生是拿 $H_1 + k_s$ 的逆去乘 $k_s$，验证算法本质就是拿 pairing 把这个式子还原回去（下面有推导）。hid 是一个字节的函数识别符做域分离，签名的例子用 01。</p>
+<p>$H_1$、$H_2$ 是把任意字节串 hash 进 $[1, N-1]$ 的函数，构造是 SM3 出块拼串：设 $ct = 1$，$hlen = 8\lceil 5\log_2 n / 32 \rceil$，每轮算 $Ha_i = H_v(01 \Vert Z \Vert ct)$ 然后 $ct$ 加一，拼够 $hlen$ 比特转成整数，最后 $h_1 = (Ha \bmod (n-1)) + 1$。$H_2$ 一模一样，就是前缀换成 02。拿前缀字节把同一个 hash 掰成多个用途，和 KDF 里的计数器是一个思路。</p>
+<h2 id="生成算法"><a href="#生成算法" class="headerlink" title="生成算法"></a>生成算法</h2><p><strong>GB&#x2F;T 38635.2中写：</strong>（标准原步骤，符号照抄）</p>
+<p>A1：计算 $g = e(P_1, P_{pub\text{-}s})$；</p>
+<p>A2：产生随机数 $r \in [1, N-1]$；</p>
+<p>A3：计算 $w = g^r$，转比特串；</p>
+<p>A4：计算 $h = H_2(M \Vert w, N)$；</p>
+<p>A5：计算 $l = (r - h) \bmod N$，若 $l = 0$ 回到 A2；</p>
+<p>A6：计算 $S = [l]d_{sA}$；</p>
+<p>A7：输出 $(h, S)$。</p>
+<p>输出格式和 SM2&#x2F;ECDSA 的 $(r, s)$ 不一样，SM9 签名是 $(h, S)$：$h$ 是个 256 位整数（hash 值），$S$ 是 $G_1$ 上的点。</p>
+<h2 id="验证算法"><a href="#验证算法" class="headerlink" title="验证算法"></a>验证算法</h2><p>B1：检查 $h' \in [1, N-1]$；</p>
+<p>B2：检查 $S' \in G_1$；</p>
+<p>B3：计算 $g = e(P_1, P_{pub\text{-}s})$；</p>
+<p>B4：计算 $t = g^{h'}$；</p>
+<p>B5：计算 $h_1 = H_1(ID_A \Vert hid, N)$；</p>
+<p>B6：计算 $P = [h_1]P_2 + P_{pub\text{-}s}$（$G_2$ 的点）；</p>
+<p>B7：计算 $u = e(S', P)$；</p>
+<p>B8：计算 $w' = u \cdot t$，转比特串；</p>
+<p>B9：计算 $h_2 = H_2(M' \Vert w', N)$，$h_2 = h'$ 就通过。</p>
+<p>正确性一行推完：$u \cdot t$ 在指数上是 $l \cdot t_2 \cdot (h_1 + k_s) + k_s \cdot h' = l \cdot k_s + k_s \cdot h' = k_s \cdot (l + h') = k_s \cdot r$，而 $w = g^r = e(P_1, P_2)^{k_s r}$，两个相等，hash 后的 $h_2$ 自然等于 $h$。</p>
+<h2 id="标准测试向量"><a href="#标准测试向量" class="headerlink" title="标准测试向量"></a>标准测试向量</h2><p>38635.2 附录A.1 的例子（这个例子就是 256 位推荐曲线上的，不像 SM2 标准的例子另给了一条示例曲线）：</p>
+<p>$ID_A$：416C696365（就是字符串 Alice）</p>
+<p>$hid$：01</p>
+<p>$k_s$：000130E78459D78545CB54C587E02CF480CE0B66340F319F348A1D5B1F2DC5F4</p>
+<p>$d_{sA}$：A5702F05CF1315305E2D6EB64B0DEB923DB1A0BCF0CAFF90523AC8754AA69820（x）78559A844411F9825C109F5EE3F52D720DD01785392A727BB1556952B2B013D3（y）</p>
+<p>消息：Chinese IBS standard</p>
+<p>$r$：033C8616B06704813203DFD00965022ED15975C662337AED648835DC4B1CBE</p>
+<p>$h$：823C4B21E4BD2DFE1ED92C606653E996668563152FC33F55D7BFBB9BD9705ADB</p>
+<p>$S$：0473BF96923CE58B6AD0E13E9643A406D8EB98417C50EF1B29CEF9ADB48B6D598C856712F1C2E0968AB7769F42A99586AED139D5B8B3E15891827CC2ACED9BAA05（04 是未压缩点前缀）</p>
+<p>$h$ 的产生要用 pairing 算 $w = g^r$，验证代码那节的脚本没手搓 pairing，所以 $h$ 直接引用标准值，剩下的链路（$H_1$、KGC 派生、$S = [(r-h)]d_{sA}$）全部能离线对上。</p>
+<h1 id="密钥交换协议"><a href="#密钥交换协议" class="headerlink" title="密钥交换协议"></a>密钥交换协议</h1><p>加密体系的主密钥方向和签名正好反过来：KGC 随机 $k_e \in [1, N-1]$，算 $P_{pub\text{-}e} = [k_e]P_1$（这次是 $G_1$ 的点），用户加密私钥 $d_{eA} = [t_2]P_2$（$G_2$ 的点），$t_1 = (H_1(ID_A \Vert hid, N) + k_e) \bmod N$，$t_2 = k_e \cdot t_1^{-1} \bmod N$。</p>
+<p>个人感觉这个方向设计是故意交叉的：签名的公钥侧把 $P_2$ 塞给了主公钥、加密反过来，两边负载均衡一下，毕竟 $G_2$ 的运算比 $G_1$ 贵。</p>
+<p>A 发起（对端 B）：</p>
+<p>A1：计算 $Q_B = [H_1(ID_B \Vert hid, N)]P_1 + P_{pub\text{-}e}$（$G_1$ 的点，就是拿 B 的身份当公钥）；</p>
+<p>A2：产生随机数 $r_A \in [1, N-1]$；</p>
+<p>A3：计算 $R_A = [r_A]Q_B$；</p>
+<p>A4：把 $R_A$ 发给 B。</p>
+<p>B 响应：</p>
+<p>B1：计算 $Q_A = [H_1(ID_A \Vert hid, N)]P_1 + P_{pub\text{-}e}$；</p>
+<p>B2：产生随机数 $r_B \in [1, N-1]$；</p>
+<p>B3：计算 $R_B = [r_B]Q_A$；</p>
+<p>B4：验证 $R_A \in G_1$，计算 $g_1 = e(R_A, d_{eB})$，$g_2 = e(P_{pub\text{-}e}, P_2)^{r_B}$，$g_3 = g_1^{r_B}$；</p>
+<p>B5：计算 $SK_B = KDF(ID_A \Vert ID_B \Vert R_A \Vert R_B \Vert g_1 \Vert g_2 \Vert g_3, klen)$；</p>
+<p>B6：（可选）$S_B = Hash(0x82 \Vert g_1 \Vert Hash(g_2 \Vert g_3 \Vert ID_A \Vert ID_B \Vert R_A \Vert R_B))$；</p>
+<p>B7：把 $R_B$（和 $S_B$）发给 A。</p>
+<p>A 验证再算：</p>
+<p>A5：验证 $R_B \in G_1$，计算 $g_1' = e(P_{pub\text{-}e}, P_2)^{r_A}$，$g_2' = e(R_B, d_{eA})$，$g_3' = (g_2')^{r_A}$；</p>
+<p>A6：（可选）按 $S_B$ 的公式算 $S_1$，验证 $S_1 = S_B$；</p>
+<p>A7：计算 $SK_A = KDF(ID_A \Vert ID_B \Vert R_A \Vert R_B \Vert g_1' \Vert g_2' \Vert g_3', klen)$；</p>
+<p>A8：（可选）算 $S_A = Hash(0x83 \Vert g_1' \Vert Hash(g_2' \Vert g_3' \Vert ID_A \Vert ID_B \Vert R_A \Vert R_B))$ 发给 B 验。</p>
+<p>对称性一行推完：$e(R_A, d_{eB})$ 在指数上是 $r_A \cdot (h_B + k_e) \cdot k_e \cdot (h_B + k_e)^{-1} = r_A \cdot k_e$，和 $g_1' = e(P_{pub\text{-}e}, P_2)^{r_A}$ 相同，$g_2$ 与 $g_2'$ 同理，所以 $(g_1, g_2, g_3) = (g_1', g_2', g_3')$，两边 KDF 出同一个密钥。</p>
+<p>KDF 和 SM2 那篇的一模一样（SM3 计数器模式，$ct$ 从 1 起，末块截断），没什么好说的。</p>
+<h1 id="密钥封装协议"><a href="#密钥封装协议" class="headerlink" title="密钥封装协议"></a>密钥封装协议</h1><p>A 封装给 B：</p>
+<p>A1：计算 $Q_B = [H_1(ID_B \Vert hid, N)]P_1 + P_{pub\text{-}e}$；</p>
+<p>A2：产生随机数 $r \in [1, N-1]$；</p>
+<p>A3：计算 $C = [r]Q_B$，转比特串；</p>
+<p>A4：计算 $g = e(P_{pub\text{-}e}, P_2)$；</p>
+<p>A5：计算 $w = g^r$；</p>
+<p>A6：计算 $K = KDF(C \Vert w \Vert ID_B, klen)$，全 0 回到 A2；</p>
+<p>A7：输出 $(K, C)$。</p>
+<p>B 解封装：</p>
+<p>B1：验证 $C \in G_1$；</p>
+<p>B2：计算 $w' = e(C, d_{eB})$，转比特串；</p>
+<p>B3：计算 $K' = KDF(C \Vert w' \Vert ID_B, klen)$，全 0 报错；</p>
+<p>B4：输出 $K'$。</p>
+<p>一致性一行：$e(C, d_{eB}) = e([r]Q_B, d_{eB})$ 指数是 $r \cdot k_e$，和 $w = g^r$ 一样。</p>
+<h1 id="公钥加密算法"><a href="#公钥加密算法" class="headerlink" title="公钥加密算法"></a>公钥加密算法</h1><h2 id="加密算法"><a href="#加密算法" class="headerlink" title="加密算法"></a>加密算法</h2><p>消息 $M$（$mlen$ 比特），加密给 B：</p>
+<p>A1：计算 $Q_B = [H_1(ID_B \Vert hid, N)]P_1 + P_{pub\text{-}e}$；</p>
+<p>A2：产生随机数 $r \in [1, N-1]$；</p>
+<p>A3：计算 $C_1 = [r]Q_B$，转比特串；</p>
+<p>A4：计算 $g = e(P_{pub\text{-}e}, P_2)$；</p>
+<p>A5：计算 $w = g^r$；</p>
+<p>A6：计算 $K = KDF(C_1 \Vert w \Vert ID_B, klen)$，然后分两种模式：</p>
+<p><strong>(1)</strong> 基于 KDF 的序列密码模式：$klen = mlen + K2\_len$，$K_1$ 取 $K$ 最左 $mlen$ 比特，$K_2$ 取剩下的，$K_1$ 全 0 回到 A2，密文 $C_2 = M \oplus K_1$；</p>
+<p><strong>(2)</strong> 结合 KDF 的分组密码模式：$klen = K1\_len + K2\_len$（$K1\_len$ 得是 128 比特的倍数，Enc 就是 SM4），$C_2 = IV \Vert Enc(K_1, M, IV)$，IV 取 $K$ 的前 16 字节（非 ECB 模式才拼 IV），填充规则有点特别：把 $k - (mlen \bmod k)$ 这个数既当填充值又当填充个数，也就是永远垫 1 到 16 字节，解密看最后一字节就知道去掉几个；</p>
+<p>A7：计算 $C_3 = MAC(K_2, C_2)$，这个 MAC 就是 $H_v(C_2 \Vert K_2)$，注意顺序是密钥拼在后面；</p>
+<p>A8：输出 $C = C_1 \Vert C_3 \Vert C_2$。</p>
+<p>和 SM2 那篇同一个坑：新标准是 $C_1 \Vert C_3 \Vert C_2$，老 GM&#x2F;T 0044 年代的一些实现是 $C_1 \Vert C_2 \Vert C_3$，互操作对不上先查这个。</p>
+<h2 id="解密算法"><a href="#解密算法" class="headerlink" title="解密算法"></a>解密算法</h2><p>B1：从 $C$ 里取出 $C_1$，验证 $C_1 \in G_1$；</p>
+<p>B2：计算 $w' = e(C_1, d_{eB})$；</p>
+<p>B3：按模式算 $M'$：序列密码模式 $M' = C_2 \oplus K_1'$（$K' = KDF(C_1 \Vert w' \Vert ID_B, mlen + K2\_len)$），分组密码模式 $M' = Dec(K_1', C_2)$（$K' = KDF(C_1 \Vert w' \Vert ID_B, K1\_len + K2\_len)$），$K_1'$ 全 0 报错；</p>
+<p>B4：计算 $u = MAC(K_2', C_2)$，不等于 $C_3$ 报错；</p>
+<p>B5：输出 $M'$。</p>
+<h1 id="验证代码"><a href="#验证代码" class="headerlink" title="验证代码"></a>验证代码</h1><p>纯 python，SM3 内联（前面 SM3 篇讲过实现，直接搬过来用）：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">IV</span> =<span class="hljs-meta"> [0x7380166F, 0x4914B2B9, 0x172442D7, 0xDA8A0600,</span><br><span class="hljs-meta">      0xA96F30BC, 0x163138AA, 0xE38DEE4D, 0xB0FB0E4E]</span><br><br><span class="hljs-attribute">def</span> rotl(x, n):<br>    <span class="hljs-attribute">n</span> %= <span class="hljs-number">32</span><br>    <span class="hljs-attribute">return</span> ((x &lt;&lt; n) | (x &gt;&gt; (<span class="hljs-number">32</span> - n))) &amp; <span class="hljs-number">0</span>xFFFFFFFF<br><br><span class="hljs-attribute">def</span> sm3(data: bytes) -&gt; bytes:<br>    <span class="hljs-attribute">bitlen</span> = len(data) * <span class="hljs-number">8</span><br>    <span class="hljs-attribute">msg</span> = bytearray(data)<br>    <span class="hljs-attribute">msg</span>.append(<span class="hljs-number">0</span>x80)<br>    <span class="hljs-attribute">while</span> len(msg) % <span class="hljs-number">64</span> != <span class="hljs-number">56</span>:<br>        <span class="hljs-attribute">msg</span>.append(<span class="hljs-number">0</span>)<br>    <span class="hljs-attribute">msg</span> += bitlen.to_bytes(<span class="hljs-number">8</span>, &#x27;big&#x27;)<br>    <span class="hljs-attribute">V</span> = IV[:]<br>    <span class="hljs-attribute">for</span> <span class="hljs-literal">off</span> in range(<span class="hljs-number">0</span>, len(msg), <span class="hljs-number">64</span>):<br>        <span class="hljs-attribute">blk</span> = msg[<span class="hljs-literal">off</span>:<span class="hljs-literal">off</span>+<span class="hljs-number">64</span>]<br>        <span class="hljs-attribute">W</span> =<span class="hljs-meta"> [int.from_bytes(blk[i*4:i*4+4], &#x27;big&#x27;) for i in range(16)]</span><br>        <span class="hljs-attribute">for</span> j in range(<span class="hljs-number">16</span>, <span class="hljs-number">68</span>):<br>            <span class="hljs-attribute">w</span> = W[j-<span class="hljs-number">16</span>] ^ W[j-<span class="hljs-number">9</span>] ^ rotl(W[j-<span class="hljs-number">3</span>], <span class="hljs-number">15</span>)<br>            <span class="hljs-attribute">w</span> = (w ^ rotl(w, <span class="hljs-number">15</span>) ^ rotl(w, <span class="hljs-number">23</span>)) ^ rotl(W[j-<span class="hljs-number">13</span>], <span class="hljs-number">7</span>) ^ W[j-<span class="hljs-number">6</span>]<br>            <span class="hljs-attribute">W</span>.append(w)<br>        <span class="hljs-attribute">W1</span> =<span class="hljs-meta"> [W[j] ^ W[j+4] for j in range(64)]</span><br>        <span class="hljs-attribute">A</span>, B, C, D, E, F, G, H = V<br>        <span class="hljs-attribute">for</span> j in range(<span class="hljs-number">64</span>):<br>            <span class="hljs-attribute">T</span> = rotl(<span class="hljs-number">0</span>x79CC4519 if j &lt; <span class="hljs-number">16</span> else <span class="hljs-number">0</span>x7A879D8A, j)<br>            <span class="hljs-attribute">SS1</span> = rotl((rotl(A, <span class="hljs-number">12</span>) + E + T) &amp; <span class="hljs-number">0</span>xFFFFFFFF, <span class="hljs-number">7</span>)<br>            <span class="hljs-attribute">SS2</span> = SS1 ^ rotl(A, <span class="hljs-number">12</span>)<br>            <span class="hljs-attribute">if</span> j &lt; <span class="hljs-number">16</span>:<br>                <span class="hljs-attribute">FF</span>, GG = A ^ B ^ C, E ^ F ^ G<br>            <span class="hljs-attribute">else</span>:<br>                <span class="hljs-attribute">FF</span> = (A &amp; B) | ((A ^ B) &amp; C)<br>                <span class="hljs-attribute">GG</span> = (E &amp; F) | ((E ^ <span class="hljs-number">0</span>xFFFFFFFF) &amp; G)<br>            <span class="hljs-attribute">TT1</span> = (FF + D + SS2 + W1[j]) &amp; <span class="hljs-number">0</span>xFFFFFFFF<br>            <span class="hljs-attribute">TT2</span> = (GG + H + SS1 + W[j]) &amp; <span class="hljs-number">0</span>xFFFFFFFF<br>            <span class="hljs-attribute">D</span>, C, B = C, rotl(B, <span class="hljs-number">9</span>), A<br>            <span class="hljs-attribute">A</span>, H, G, F = TT1, G, rotl(F, <span class="hljs-number">19</span>), E<br>            <span class="hljs-attribute">E</span> = TT2 ^ rotl(TT2, <span class="hljs-number">9</span>) ^ rotl(TT2, <span class="hljs-number">17</span>)<br>        <span class="hljs-attribute">V</span> =<span class="hljs-meta"> [(x ^ y) for x, y in zip(V, [A, B, C, D, E, F, G, H])]</span><br>    <span class="hljs-attribute">return</span> b&#x27;&#x27;.join(v.to_bytes(<span class="hljs-number">4</span>, &#x27;big&#x27;) for v in V)<br><br><span class="hljs-attribute">assert</span> sm3(b&#x27;abc&#x27;).hex() == &#x27;<span class="hljs-number">66</span>c7f0f462eeedd9d1f2d46bdc10e4e2&#x27; <span class="hljs-punctuation">\</span><br><span class="hljs-punctuation"></span>                           &#x27;<span class="hljs-number">4167</span>c4875cf2f7a2297da02b8f4ba8e0&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>曲线参数和 BN 恒等式（素性用 sympy 的 isprime，不想装依赖就自己写个 Miller-Rabin）：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">import</span> math<br><span class="hljs-attribute">t</span>  = <span class="hljs-number">0</span>x600000000058F98A<br><span class="hljs-attribute">q</span>  = <span class="hljs-number">0</span>xB640000002A3A6F1D603AB4FF58EC74521F2934B1A7AEEDBE56F9B27E351457D<br><span class="hljs-attribute">N</span>  = <span class="hljs-number">0</span>xB640000002A3A6F1D603AB4FF58EC74449F2934B18EA8BEEE56EE19CD69ECF25<br><span class="hljs-attribute">tr</span> = <span class="hljs-number">0</span>xD8000000019062ED0000B98B0CB27659<br><span class="hljs-attribute">P1</span> = (<span class="hljs-number">0</span>x93DE051D62BF718FF5ED0704487D01D6E1E4086909DC3280E8C4E4817C66DDDD,<br>      <span class="hljs-attribute">0x21FE8DDA4F21E607631065125C395BBC1C1C00CBFA6024350C464CD70A3EA616</span>)<br><span class="hljs-comment"># Fq2 元素写成 (常数项, u的系数)，即 a + b*u，u^2 = -2</span><br><span class="hljs-comment"># P2 别学标准那个高低位混排，直接拆开写</span><br><span class="hljs-attribute">P2x</span> = (<span class="hljs-number">0</span>x3722755292130B08D2AAB97FD34EC120EE265948D19C17ABF9B7213BAF82D65B,<br>       <span class="hljs-attribute">0x85AEF3D078640C98597B6027B441A01FF1DD2C190F5E93C454806C11D8806141</span>)<br><span class="hljs-attribute">P2y</span> = (<span class="hljs-number">0</span>xA7CF28D519BE3DA65F3170153D278FF247EFBA98A71A08116215BBA5C999A7C7,<br>       <span class="hljs-attribute">0x17509B092E845C1266BA0D262CBEE6ED0736A96FA347C8BD856DC76B84EBEB96</span>)<br><br><span class="hljs-attribute">assert</span> q == <span class="hljs-number">36</span>*t**<span class="hljs-number">4</span> + <span class="hljs-number">36</span>*t**<span class="hljs-number">3</span> + <span class="hljs-number">24</span>*t**<span class="hljs-number">2</span> + <span class="hljs-number">6</span>*t + <span class="hljs-number">1</span><br><span class="hljs-attribute">assert</span> N == <span class="hljs-number">36</span>*t**<span class="hljs-number">4</span> + <span class="hljs-number">36</span>*t**<span class="hljs-number">3</span> + <span class="hljs-number">18</span>*t**<span class="hljs-number">2</span> + <span class="hljs-number">6</span>*t + <span class="hljs-number">1</span><br><span class="hljs-attribute">assert</span> tr == <span class="hljs-number">6</span>*t**<span class="hljs-number">2</span> + <span class="hljs-number">1</span> and q + <span class="hljs-number">1</span> - tr == N    # cf = <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>E(Fq) 的点运算就是教科书公式（注意 BN 曲线 $a = 0$，倍点斜率是 $3x^2/2y$，没有 $+a$ 那项，我在这栽过一次）：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">def</span> ec_add(P, Q):<br>    <span class="hljs-attribute">if</span> P is None: return Q<br>    <span class="hljs-attribute">if</span> Q is None: return P<br>    <span class="hljs-attribute">if</span> P[<span class="hljs-number">0</span>] == Q[<span class="hljs-number">0</span>] and (P[<span class="hljs-number">1</span>] + Q[<span class="hljs-number">1</span>]) % q == <span class="hljs-number">0</span>: return None<br>    <span class="hljs-attribute">if</span> P == Q:<br>        <span class="hljs-attribute">lam</span> = <span class="hljs-number">3</span> * P[<span class="hljs-number">0</span>] * P[<span class="hljs-number">0</span>] * pow(<span class="hljs-number">2</span> * P[<span class="hljs-number">1</span>], -<span class="hljs-number">1</span>, q) % q   # a = <span class="hljs-number">0</span><br>    <span class="hljs-attribute">else</span>:<br>        <span class="hljs-attribute">lam</span> = (Q[<span class="hljs-number">1</span>] - P[<span class="hljs-number">1</span>]) * pow(Q[<span class="hljs-number">0</span>] - P[<span class="hljs-number">0</span>], -<span class="hljs-number">1</span>, q) % q<br>    <span class="hljs-attribute">xr</span> = (lam * lam - P[<span class="hljs-number">0</span>] - Q[<span class="hljs-number">0</span>]) % q<br>    <span class="hljs-attribute">return</span> (xr, (lam * (P[<span class="hljs-number">0</span>] - xr) - P[<span class="hljs-number">1</span>]) % q)<br><br><span class="hljs-attribute">def</span> ec_mul(k, P):<br>    <span class="hljs-attribute">R</span> = None<br>    <span class="hljs-attribute">while</span> k:<br>        <span class="hljs-attribute">if</span> k &amp; <span class="hljs-number">1</span>: R = ec_add(R, P)<br>        <span class="hljs-attribute">P</span> = ec_add(P, P)<br>        <span class="hljs-attribute">k</span> &gt;&gt;= <span class="hljs-number">1</span><br>    <span class="hljs-attribute">return</span> R<br><br><span class="hljs-attribute">assert</span> (P1[<span class="hljs-number">1</span>]**<span class="hljs-number">2</span> - P1[<span class="hljs-number">0</span>]**<span class="hljs-number">3</span> - <span class="hljs-number">5</span>) % q == <span class="hljs-number">0</span>      # P1 在 y^<span class="hljs-number">2</span> = x^<span class="hljs-number">3</span> + <span class="hljs-number">5</span> 上<br><span class="hljs-attribute">assert</span> ec_mul(N, P1) is None                   # 阶 = N<br></code></pre></td></tr></table></figure>
+
+<p>Fq2 就是 $(a_0 + a_1 u)$ 照乘法展开合并同类项（$u^2 = -2$），逆元拿范数 $a_0^2 + 2a_1^2$ 的逆算；扭曲线是 $y^2 = x^3 + 5u$。同样的两个断言跑 $P_2$（在扭曲线上、$[N]P_2 = O$），这篇的脚本我都跑过全过，$P_2$ 那个高低位顺序就是靠这两个断言试出来的。</p>
+<p>H1 构造加 KGC 派生，对拍附录A.1：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs scss">def <span class="hljs-built_in">hash_to_zn</span>(prefix, Z, n):          # H1: prefix=<span class="hljs-number">0</span>x01, H2: prefix=<span class="hljs-number">0</span>x02<br>    hlen = <span class="hljs-number">8</span> * math.<span class="hljs-built_in">ceil</span>(<span class="hljs-number">5</span> * math.<span class="hljs-built_in">log2</span>(n) / <span class="hljs-number">32</span>)<br>    Ha, ct = b<span class="hljs-string">&#x27;&#x27;</span>, <span class="hljs-number">1</span><br>    for _ in <span class="hljs-built_in">range</span>(math.<span class="hljs-built_in">ceil</span>(hlen / <span class="hljs-number">256</span>)):<br>        Ha += <span class="hljs-built_in">sm3</span>(<span class="hljs-built_in">bytes</span>([prefix]) + Z + ct.<span class="hljs-built_in">to_bytes</span>(<span class="hljs-number">4</span>, <span class="hljs-string">&#x27;big&#x27;</span>))<br>        ct += <span class="hljs-number">1</span><br>    return (int.<span class="hljs-built_in">from_bytes</span>(Ha[:hlen // <span class="hljs-number">8</span>], <span class="hljs-string">&#x27;big&#x27;</span>) % (n - <span class="hljs-number">1</span>)) + <span class="hljs-number">1</span><br><br>ks, uid, hid = <span class="hljs-number">0</span>x000130E78459D78545CB54C587E02CF480CE0B66340F319F348A1D5B1F2DC5F4, b<span class="hljs-string">&#x27;Alice&#x27;</span>, <span class="hljs-number">0</span>x01<br>t1 = (<span class="hljs-built_in">hash_to_zn</span>(<span class="hljs-number">1</span>, uid + <span class="hljs-built_in">bytes</span>([hid]), N) + ks) % N<br>t2 = ks * <span class="hljs-built_in">pow</span>(t1, -<span class="hljs-number">1</span>, N) % N<br>dsA = <span class="hljs-built_in">ec_mul</span>(t2, P1)<br>assert dsA == (<span class="hljs-number">0</span>xA5702F05CF1315305E2D6EB64B0DEB923DB1A0BCF0CAFF90523AC8754AA69820,<br>               <span class="hljs-number">0</span>x78559A844411F9825C109F5EE3F52D720DD01785392A727BB1556952B2B013D3)<br><br>r = <span class="hljs-number">0</span>x033C8616B06704813203DFD00965022ED15975C662337AED648835DC4B1CBE<br>h = <span class="hljs-number">0</span>x823C4B21E4BD2DFE1ED92C606653E996668563152FC33F55D7BFBB9BD9705ADB   # 标准值<br>S = <span class="hljs-built_in">ec_mul</span>((r - h) % N, dsA)           # A5/A6 两步合起来<br>assert ((<span class="hljs-string">&#x27;04%064x%064x&#x27;</span> % S).<span class="hljs-built_in">upper</span>() ==<br>        <span class="hljs-string">&#x27;0473BF96923CE58B6AD0E13E9643A406D8EB98417C50EF1B29CEF9ADB48B6D598&#x27;</span><br>        <span class="hljs-string">&#x27;C856712F1C2E0968AB7769F42A99586AED139D5B8B3E15891827CC2ACED9BAA05&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>对上就说明 $H_1$ 构造、KGC 派生、$G_1$ 点乘这条链全对（$h$ 要 pairing 才能算，拿标准值锚定）。$h$ 的推导链是 $w = e(P_1, P_{pub\text{-}s})^r$ 再 $H_2(M \Vert w, N)$，想跑完整签名验证的话 gmssl 库里有 sm9 模块，装一个直接调就行。</p>
+<h1 id="相关攻击"><a href="#相关攻击" class="headerlink" title="相关攻击"></a>相关攻击</h1><p><strong>(1)</strong> KGC 天生 key escrow：KGC 自己能算出任何人的私钥（能签能解密一切），主密钥一丢全系统沦陷。这是 IBC 的设计内伤，也是它一直推不开的原因之一。做题看到”KGC 和某一通信方串通”的设定别惊讶，是特性不是 bug。</p>
+<p><strong>(2)</strong> 拿到 $k_s$ 等于伪造任何人：私钥派生就一步 $t_2 = k_s (H_1 + k_s)^{-1}$，ID 随便填。反过来，拿到某个用户的 $d_{sA}$ 想反推 $k_s$，得先对 $d_{sA}$ 解 ECDLP 恢复 $t_2$（之后 $k_s = t_2 H_1 (1 - t_2)^{-1}$ 就是线性的事了），254 位素阶群上不现实。</p>
+<p><strong>(3)</strong> 方向别记反：签名主公钥在 $G_2$、签名私钥在 $G_1$；加密体系全反过来。写题对拍的时候两边群搞混，会出现每个值单独看都”对”、合起来验签死活不过的灵异现象，特别隐蔽。</p>
+<p><strong>(4)</strong> B1&#x2F;B2 那种成员检查不是废话：不验 $S' \in G_1$、$C_1 \in G_1$，就可能吃 invalid curve &#x2F; 小阶子群攻击（拿错曲线或者低阶点骗协议运算，一段段泄信息），这类题的突破口经常就是”实现少写了一行检查”。</p>
+<p><strong>(5)</strong> 嵌入次数是双刃剑：pairing 把 $G_1$、$G_2$ 上的 DLP 搬到 $\mathbb{F}_{q^{12}}$ 里去解，标准参数 $k = 12$ 是平衡过的安全点；但题目要是自定义曲线给了个很小的 $k$（2、4、6 这种），又让你算 pairing，基本就是明示 MOV 攻击，把椭圆曲线上的 DLP 转成有限域乘法群的 DLP，再用 index calculus 收掉。</p>
+<p><strong>(6)</strong> hid 和 ID 编码是互操作重灾区：hid 是域分离字节，签名和加密用不同的值，混用了派生出来的私钥直接对不上；ID 的编码方式（原始字符串还是带长度前缀）各家库也不统一，排错先把这个对齐。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/crypto/" class="print-no-link">#crypto</a>
+      
+        <a href="/tags/%E5%9B%BD%E5%AF%86/" class="print-no-link">#国密</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SM9算法分析（国密学习5/5）</div>
+      <div>https://baymax-fools.github.io/2026/07/04/crypto/SM9算法分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>Baymax</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>July 4, 2026</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Updated on</div>
+          <div>November 4, 2026</div>
+        </div>
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/07/16/crypto/IPSec%E5%8D%8F%E8%AE%AE%E6%97%8F/" title="IPSec协议族">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">IPSec协议族</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/06/17/crypto/%E5%A4%8D%E7%8E%B0CVE-2023-21563-bitpixie/" title="复现CVE-2023-21563(bitpixie)">
+                        <span class="hidden-mobile">复现CVE-2023-21563(bitpixie)</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+    <div id="giscus" class="giscus"></div>
+    <script type="text/javascript">
+      Fluid.utils.loadComments('#giscus', function() {
+        var options = {"repo":"Baymax-Fools/Baymax-Fools.github.io","repo-id":"R_kgDORM8YpA","category":"Q&A","category-id":"DIC_kwDORM8YpM4C2xQH","mapping":"pathname","strict":1,"reactions-enabled":1,"emit-metadata":0,"input-position":"top","theme":"preferred_color_scheme","lang":"zh-CN"};
+        var attributes = {};
+        for (let option in options) {
+          if (!option.startsWith('theme-')) {
+            var key = option.startsWith('data-') ? option : 'data-' + option;
+            attributes[key] = options[option];
+          }
+        }
+        var light = 'light';
+        var dark = 'dark';
+        window.GiscusThemeLight = light;
+        window.GiscusThemeDark = dark;
+        attributes['data-theme'] = document.documentElement.getAttribute('data-user-color-scheme') === 'dark' ? dark : light;
+        for (let attribute in attributes) {
+          var value = attributes[attribute];
+          if (value === undefined || value === null || value === '') {
+            delete attributes[attribute];
+          }
+        }
+        var s = document.createElement('script');
+        s.setAttribute('src', 'https://giscus.app/client.js');
+        s.setAttribute('crossorigin', 'anonymous');
+        for (let attribute in attributes) {
+          s.setAttribute(attribute, attributes[attribute]);
+        }
+        var ss = document.getElementsByTagName('script');
+        var e = ss.length > 0 ? ss[ss.length - 1] : document.head || document.documentElement;
+        e.parentNode.insertBefore(s, e.nextSibling);
+      });
+    </script>
+    <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Baymax - fools</span></a> <!-- <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> --> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
