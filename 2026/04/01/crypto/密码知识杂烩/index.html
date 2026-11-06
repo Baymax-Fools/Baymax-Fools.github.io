@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://baymax-fools.github.io/photos/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/1.png">
 <meta property="og:image" content="https://baymax-fools.github.io/photos/%E5%AF%86%E7%A0%81%E7%9F%A5%E8%AF%86%E6%9D%82%E7%83%A9/2.png">
 <meta property="article:published_time" content="2026-04-01T04:27:32.000Z">
-<meta property="article:modified_time" content="2026-11-03T06:55:19.135Z">
+<meta property="article:modified_time" content="2026-11-06T09:11:33.813Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta name="twitter:card" content="summary_large_image">
@@ -230,7 +230,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.8k words
+          3.7k words
         
       </span>
     
@@ -241,7 +241,7 @@
         
         
         
-          24 mins
+          32 mins
         
       </span>
     
@@ -351,6 +351,27 @@
 <li><code>exp</code> &#x2F; <code>nbf</code> 未校验：过期令牌复活</li>
 <li><code>kid</code> &#x2F; <code>jku</code> &#x2F; <code>x5u</code> 字段注入：SQL 注入、路径穿越、指向攻击者 JWKS 的 SSRF</li>
 </ul>
+<h1 id="SSH-公钥认证"><a href="#SSH-公钥认证" class="headerlink" title="SSH 公钥认证"></a>SSH 公钥认证</h1><p>最典型的签名认证流程。口令认证证明“你知道一个秘密”，公钥认证证明“你持有私钥”——秘密从头到尾不上网，上网的只有一次对挑战的签名：</p>
+<ol>
+<li>建连先做算法协商和 DH 密钥交换，得到会话密钥和全程唯一的 <strong>session_id</strong>；同时核对服务端 host key 指纹（记在 known_hosts 里，第一次连接没有记录会提示是否信任，即 <strong>TOFU</strong>：trust on first use）</li>
+<li>客户端发起 publickey 认证，把用户名、签名算法、公钥发给服务端</li>
+<li>服务端查 authorized_keys，有这个公钥就回复“请签名”</li>
+<li>客户端用私钥对 session_id 和本次认证请求签名，发回</li>
+<li>服务端用公钥验签，通过即登录；认证流量本身也走步骤 1 协商出的加密通道</li>
+</ol>
+<p>几个关键点：</p>
+<ul>
+<li>签名绑定 session_id，换一条连接签名就作废——挑战-响应防重放的标准做法</li>
+<li>两个文件各管一边：服务端的 authorized_keys 决定“谁能登录我”，客户端的 known_hosts 决定“我在跟谁说话”。不先验 host key 就做认证，中间人两头通吃</li>
+<li>私钥文件本身用口令 + KDF 加密保存（OpenSSH 私钥格式用 bcrypt），偷到 id_rsa 还得先磨出口令——回到「口令」一节：KDF 只是延缓，弱口令照样磨得出来</li>
+<li>ssh-agent：私钥常驻 agent 进程，签名请求转发给它完成，私钥不落盘不进 SSH 进程；<code>ssh -A</code> 把 agent 转发到跳板机 &#x3D; 把签名权也借给了跳板机，跳板失守即可冒充你横向移动</li>
+</ul>
+<h2 id="SSH-常见攻击面"><a href="#SSH-常见攻击面" class="headerlink" title="SSH 常见攻击面"></a>SSH 常见攻击面</h2><ul>
+<li>TOFU：第一次连接就被 MITM 的话，之后的一切信任都建立在被劫持的起点上（StrictHostKeyChecking 只能收紧首次行为）</li>
+<li>CVE-2018-15473：OpenSSH ≤ 7.7 用户名枚举——公钥认证的计时差异暴露“这个用户存不存在、有没有配公钥”</li>
+<li>Terrapin（CVE-2023-48795）：前缀截断——瞬时中间人重置序列号，把握手开头的扩展协商报文截掉实现降级，修复靠 strict KEX 严格同步序列号</li>
+<li>agent 转发滥用：高权限跳板机上转发的 agent socket 谁都能用（root 直接拿 <code>SSH_AUTH_SOCK</code> 借签名），非必要不开 <code>-A</code></li>
+</ul>
 <h1 id="ChaCha20-Poly1305"><a href="#ChaCha20-Poly1305" class="headerlink" title="ChaCha20-Poly1305"></a>ChaCha20-Poly1305</h1><p>与 GCM 同级的 AEAD：ChaCha20 流密码负责加密，Poly1305 负责认证（每条消息的 Poly1305 一次性密钥由 ChaCha20 按 nonce 派生），IETF 版本（RFC 8439）nonce 96 位、tag 128 位。</p>
 <ul>
 <li>对比 AES-GCM：无 AES 硬件加速的平台上更快，纯软件实现天然常量时间，不易受时序侧信道影响</li>
@@ -400,7 +421,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>Updated on</div>
-          <div>November 3, 2026</div>
+          <div>November 6, 2026</div>
         </div>
       
       
