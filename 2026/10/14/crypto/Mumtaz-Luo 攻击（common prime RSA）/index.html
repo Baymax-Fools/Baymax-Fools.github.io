@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://baymax-fools.github.io/photos/Mumtaz-Luo%20%E6%94%BB%E5%87%BB%EF%BC%88common%20prime%20RSA%EF%BC%89/1.png">
 <meta property="article:published_time" content="2026-10-14T07:11:00.000Z">
-<meta property="article:modified_time" content="2026-11-17T08:27:17.108Z">
+<meta property="article:modified_time" content="2026-11-17T08:34:48.439Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta property="article:tag" content="RSA">
@@ -439,19 +439,20 @@ $$</p>
 <p>参考文件下载：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/Baymax-Fools/blog-files/releases/download/common-prime-rsa-papers/Zheng2024_Revisiting_Small_Private_Key_Attacks_on_Common_Prime_RSA.pdf">Zheng 2024 英文原版 PDF（581 KB）</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/Baymax-Fools/blog-files/releases/download/common-prime-rsa-papers/Zheng2024_Chinese_Translation.md">Zheng 2024 全文中文翻译，ai翻译的（</a>——含按公式编号的阅读指引，标注了关键推导（根的界、目标多项式、格构造、行列式求解条件、收尾 gcd）的位置，方便对照本文与原文精读。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Baymax-Fools/blog-files/releases/download/common-prime-rsa-papers/Zheng2024_Chinese_Translation.md">Zheng 2024 全文中文翻译，ai翻译的（</a>方便对照本文与原文精读。</li>
 </ul>
-<h2 id="一些无聊的话"><a href="#一些无聊的话" class="headerlink" title="一些无聊的话"></a>一些无聊的话</h2><p>其实出这道题，好像没什么含金量，毕竟以现在agent的水平，肯定是很容易嗦出来的（毕竟都是2020年的论文的）；出这道题也是有一点想让大家可以提前接触，重要的是知道往哪些知识点去学习：比如后续可以跟着参考资料中的<code>common prime RSA笔记</code>（还有很多种RSA的变体）中更深入学一下共素数rsa、慢慢接触到<code>格攻击</code>这种比较抽象的东西（但在后续的密码学中又比较重要，入门可以先学学LLL算法的原理）等等等等<br>在网上有很多师傅大佬的博客都写得很全面的，非常值得学习的，大家在学习时遇到新的密码体制或者变体的时候，可以多去网上搜一下学习学习。<br>“在比赛的时候用agent只是为了队伍能在比赛期间拿到分数，往往赛后看wp和复盘才是真正的学习”我相信这句话对哪个方向来说都是适用的。</p>
+<h1 id="一些无聊的话"><a href="#一些无聊的话" class="headerlink" title="一些无聊的话"></a>一些无聊的话</h1><p>其实出这道题，好像没什么含金量，以现在agent的水平，肯定是很容易嗦出来的（毕竟都是2020年的论文的）；出这道题也是有一点想让大家可以提前接触，重要的是知道往哪些知识点去学习：比如后续可以跟着参考资料中的<code>common prime RSA笔记</code>（还有很多种RSA的变体）中更深入学一下各式各样的RSA、慢慢接触到<code>格攻击</code>这种比较抽象的东西（但在后续的密码学中又比较重要，入门可以先学学LLL算法的原理）等等等等</p>
+<p>在网上有很多师傅大佬的博客都写得很全面的，非常值得学习的，大家在学习时遇到新的密码体制或者变体的时候，可以多去网上搜一下学习学习。</p>
+<p>“在比赛的时候用agent是为了能在比赛期间拿到分数，往往赛后看wp和复盘才是真正的学习阶段”我相信这句话对哪个方向来说都是适用的。</p>
 <p>也没什么好说的，贴几个大佬的博客吧（感恩）：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://lazzzaro.github.io/2020/05/06/crypto-RSA/">Lazzaro 的 RSA 攻击套路总结</a></li>
 <li><a target="_blank" rel="noopener" href="https://tangcuxiaojikuai.github.io/">糖醋小鸡块的小屋</a></li>
 <li><a target="_blank" rel="noopener" href="https://hasegawaazusa.github.io/">独奏の小屋</a></li>
-<li><a target="_blank" rel="noopener" href="https://hasegawaazusa.github.io/hidden-number-problem.html">Hidden Number Problem 笔记 | 独奏の小屋</a></li>
 <li><a target="_blank" rel="noopener" href="https://dexterjie.github.io/2024/07/29/%E8%83%8C%E5%8C%85%E5%AF%86%E7%A0%81/#%E8%83%8C%E5%8C%85%E5%AF%86%E7%A0%81">背包密码 | DexterJie’s Blog</a></li>
 <li><a target="_blank" rel="noopener" href="https://jayxv.github.io/">Van1sh 的小屋</a></li>
 </ul>
-<p>关于sage：我推荐是用wsl+arch，可以安装新版本的sage<br>哦对了，有挺多的交互题，需要用到pwntools，可以学一下基础怎么用（不难的）</p>
+<p>关于sage：我推荐是用wsl+arch，可以安装最新版本的sage（版本10.X）<br>哦对了，有挺多的交互题，需要用到pwntools，可以学一下怎么用（比较基础，不难的）</p>
 
                 
               </div>
