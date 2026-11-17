@@ -28,7 +28,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://baymax-fools.github.io/photos/Mumtaz-Luo%20%E6%94%BB%E5%87%BB%EF%BC%88common%20prime%20RSA%EF%BC%89/1.png">
 <meta property="article:published_time" content="2026-10-14T07:11:00.000Z">
-<meta property="article:modified_time" content="2026-11-17T06:15:35.121Z">
+<meta property="article:modified_time" content="2026-11-17T08:27:17.108Z">
 <meta property="article:author" content="Baymax">
 <meta property="article:tag" content="crypto">
 <meta property="article:tag" content="RSA">
@@ -231,7 +231,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          9.5k words
+          9.8k words
         
       </span>
     
@@ -242,7 +242,7 @@
         
         
         
-          79 mins
+          82 mins
         
       </span>
     
@@ -400,7 +400,7 @@ $$</p>
 <li>M\S 行的对角元是 $R \cdot X^m$（37 个）</li>
 <li>每行只在「自己的 m 乘上 f 的 8 个单项式」那几列有值（构成上三角）</li>
 </ul>
-<h1 id="求根"><a href="#求根" class="headerlink" title="求根"></a>求根</h1><p>LLL 之后，取最短的几个向量，把缩放除掉（除以 $X^i$）还原成整系数多项式 $h_0,\dots,h_5$。它们在整数上以 $(d, ak, bk)$ 为公共根。</p>
+<h1 id="求根（更值得学一下的点）"><a href="#求根（更值得学一下的点）" class="headerlink" title="求根（更值得学一下的点）"></a>求根（更值得学一下的点）</h1><p>LLL 之后，取最短的几个向量，把缩放除掉（除以 $X^i$）还原成整系数多项式 $h_0,\dots,h_5$。它们在整数上以 $(d, ak, bk)$ 为公共根。</p>
 <p><strong>现在面对的问题变成</strong>：怎么把这个公共根$(d, ak, bk)$ 解出来？</p>
 <p>解出短向量除掉缩放后，一开始我的想法是：直接解这几个向量组成的方程组，用<code>Groebner基</code>约简，后来发现算不出来（系数太大，在ℚ上计算中间表达式的量级直接爆炸了。。。）</p>
 <p>然后根据ai的说法，学到了一种技巧：那就是把这个方程组搬到<code>GF(p)</code>上解</p>
@@ -429,19 +429,29 @@ $$</p>
 
 <h1 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs sage">N = 92193421524571778332244377443895704150098068479407086999014349866935601129685699065808336083705060177864325091585037042153456911054223440895120918901597992194638085778911482240314197597553595361967269022782142219795431318121350869243679379512711439006964771883490305542892442856131530160755312804480019326327<br>e = 16498943899554166913192425148370543123862165265804603076906979196250950368604132771835532434454171665781315375233102980900455064623281627927192118278036073008608593470141118198831615223<br>c = 81539353856703457173654174251474962458798210227092258774856200275495665718673339994237779631925443376566191680279774274822947211435425470418021101072454978934497689136402862851476972418521161045102935444059850661600491189664883937032871982008552097429619420553397036797599922784573881600718056742360752711887<br><br>Dbits = 182<br>Gbits = 410<br><br>X1 = 2 ** Dbits<br>X2 = 2 ** (Dbits - Gbits + 512 + 2)   # ak 的界 = N^(delta-gamma+1/2) ~ 2^282<br>X3 = X2<br><br>P = PolynomialRing(ZZ, &#x27;x1,x2,x3&#x27;)<br>x1,x2,x3 = P.gens()<br>f = 1 - x2 - x3 + e^2*x1^2 + e*x1*x2 + e*x1*x3 - 2*e*x1  + (1-N)*x2*x3<br><br>def solve(s,t):<br>    # 该脚本中传入的是 s=3,t=0，也就是 64*64 的维度<br>    Xinf = max(1,X2,X3,e^2*X1^2,e*X1*X2,e*X1*X3,N*X2*X3)<br>    R = Xinf * X1^(2*(s-1)+t) * (X2*X3)^(s-1)<br><br>    S = [(i1,i2,i3)<br>         for i2 in range(s) for i3 in range(s)<br>         for i1 in range(2*(s-1)-i2-i3+t+1)]<br><br>    M = [(i1,i2,i3)<br>         for i2 in range(s+1) for i3 in range(s+1)<br>         for i1 in range(2*s-i2-i3+t+1)]<br><br>    M_without_S = [m for m in M if m not in set(S)]<br><br>    g_shifts = []   # 移位多项式集合<br>    for (i1,i2,i3) in S:<br>        g = x1^i1 * x2^i2 * x3^i3 * f * X1^(2*(s-1)+t-i1) * X2^(s-1-i2) * X3^(s-1-i3)<br>        g_shifts.append((g, (i1,i2,i3)))<br>    for (i1,i2,i3) in M_without_S:<br>        g = R * x1^i1 * x2^i2 * x3^i3<br>        g_shifts.append((g, (i1,i2,i3)))<br><br>    three_i_exponent = sorted(m for _, m in g_shifts)<br>    # 生成 x1、x2、x3 的有序三元指数集合，按 (i₁,i₂,i₃) 字典序排序<br><br>    # 建表，方便后续把数据填到格中<br>    idx = &#123;m: i for i, m in enumerate(three_i_exponent)&#125;<br>    length = len(three_i_exponent)<br><br>    B = Matrix(ZZ, len(g_shifts), length)   # s = 3, t = 0 的时候是 64*64 维的格<br><br>    for r, (g, m) in enumerate(g_shifts):<br>        for mono, coef in zip(g.monomials(), g.coefficients()):<br>            i1 = mono.degree(x1); i2 = mono.degree(x2); i3 = mono.degree(x3)<br>            val = coef * X1^i1 * X2^i2 * X3^i3<br>            B[r, idx[(i1, i2, i3)]] = val<br><br>    B = B.LLL()   # 用 LLL 算法，把短向量置于矩阵前几行<br><br>    Q = PolynomialRing(QQ, &#x27;y1,y2,y3&#x27;)<br>    y1, y2, y3 = Q.gens()<br>    polys = []<br>    for i in range(min(6, length)):<br>        v = B[i]<br>        if v.is_zero(): continue<br>        h = Q(0)<br>        for mono, j in idx.items():<br>            coef = QQ(v[j]) / (X1^mono[0] * X2^mono[1] * X3^mono[2])<br>            if coef != 0:<br>                h += coef * y1^mono[0] * y2^mono[1] * y3^mono[2]<br>        polys.append(h)<br><br>    # 将方程组映射到 GF(p) 上求解（在模 p 的域上求解，系数小（只有约 287 bit））<br>    p = next_prime(2^int(X2).bit_length())<br>    Fp = PolynomialRing(GF(p), &#x27;y1,y2,y3&#x27;)<br>    fz1, fz2, fz3 = Fp.gens()<br>    Ip = Fp.ideal([Fp(h) for h in polys[:4]])    # 构造理想<br>    Vp = Ip.variety()   # 在 GF(p) 上求解多项式方程组，得到有限个解点<br><br>    for pt in Vp:<br>        try:<br>            r1 = ZZ(pt[fz1]); r2 = ZZ(pt[fz2]); r3 = ZZ(pt[fz3])<br>            # 分别对应 d, ak, bk<br><br>            k = gcd(r2, r3)<br>            a = r2 // k; b = r3 // k<br>            g = (e*r1 - 1) // (2*a*b*k)<br>            p = 2*g*a + 1<br>            if N % p == 0:<br>                d = r1<br>                print(&quot;d =&quot;, r1)<br>                print(&quot;p =&quot;, p)<br>                print(&quot;q =&quot;, N // p)<br><br>                m = power_mod(c, d, N)<br>                from Crypto.Util.number import long_to_bytes<br>                print(&quot;flag:&quot;, long_to_bytes(int(m)))<br>                break<br>        except:<br>            continue<br><br>solve(3,0)<br></code></pre></td></tr></table></figure>
 
-<p>%%<br>几个容易看漏的点：</p>
+
+<p>参考资料：</p>
 <ul>
-<li><code>f</code> 的<strong>常数项必须是 1</strong>——这是 Howgrave-Graham 引理的要求（可归一化），本题天然满足</li>
-<li>还原多项式那一步 <code>QQ(v[j]) / (X1^mono[0] * ...)</code> 就是「把缩放除掉」，除的都是 2 的幂，所以映射到 GF(p) 时分母可逆（p 是奇素数），<strong>有理系数无损映射</strong></li>
-<li>最后的收尾用的是 <code>gcd(a,b)=1</code>：$k = \gcd(ak, bk)$ 的公因子只可能是 k，于是 $a = ak/k$、$b = bk/k$，代回 $ed = 2gabk+1$ 解出 g，再 $p = 2ga+1$ 验证整除</li>
-<li><code>polys[:4]</code> 取前 4 个：3 个未知数需要 3 个独立方程削到 0 维，第 4 个是保险</li>
-<li>收尾那段里 <code>p = 2*g*a + 1</code> 把外层那个 <code>p</code>（GF 的模数）覆盖掉了——此时 <code>Vp</code> 已经算完，所以不影响结果，但自己写的时候最好换个变量名免得看晕<br>%%</li>
-</ul>
-<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ul>
 <li>qsdz, <a target="_blank" rel="noopener" href="https://hasegawaazusa.github.io/common-prime-rsa.html">Common Prime RSA 笔记</a>（基础篇）</li>
-<li>Mumtaz &amp; Luo, <em>A small private exponent attack on the common prime RSA</em>, Information Sciences, 2020</li>
-<li>Zheng et al., <em>Revisiting the Common Prime RSA</em>, IEEE Access 2024（DOI 10.1109&#x2F;ACCESS.2024.3349633 &#x2F; eprint 2023&#x2F;1330）</li>
+<li>Mumtaz &amp; Luo, <em>A small private exponent attack on the common prime RSA</em>, Information Sciences 538 (2020) 54–68（<a target="_blank" rel="noopener" href="https://dblp.org/db/journals/isci/isci538.html">dblp 卷页</a>，Elsevier 付费、无公开 PDF）</li>
+<li>Mengce Zheng, <em>Revisiting Small Private Key Attacks on Common Prime RSA</em>, IEEE Access 2024（<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2310.12572">arXiv:2310.12572</a> &#x2F; <a target="_blank" rel="noopener" href="https://eprint.iacr.org/2023/1330">eprint 2023&#x2F;1330</a> &#x2F; <a target="_blank" rel="noopener" href="https://doi.org/10.1109/ACCESS.2024.3349633">DOI</a>）</li>
 </ul>
+<p>参考文件下载：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/Baymax-Fools/blog-files/releases/download/common-prime-rsa-papers/Zheng2024_Revisiting_Small_Private_Key_Attacks_on_Common_Prime_RSA.pdf">Zheng 2024 英文原版 PDF（581 KB）</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Baymax-Fools/blog-files/releases/download/common-prime-rsa-papers/Zheng2024_Chinese_Translation.md">Zheng 2024 全文中文翻译，ai翻译的（</a>——含按公式编号的阅读指引，标注了关键推导（根的界、目标多项式、格构造、行列式求解条件、收尾 gcd）的位置，方便对照本文与原文精读。</li>
+</ul>
+<h2 id="一些无聊的话"><a href="#一些无聊的话" class="headerlink" title="一些无聊的话"></a>一些无聊的话</h2><p>其实出这道题，好像没什么含金量，毕竟以现在agent的水平，肯定是很容易嗦出来的（毕竟都是2020年的论文的）；出这道题也是有一点想让大家可以提前接触，重要的是知道往哪些知识点去学习：比如后续可以跟着参考资料中的<code>common prime RSA笔记</code>（还有很多种RSA的变体）中更深入学一下共素数rsa、慢慢接触到<code>格攻击</code>这种比较抽象的东西（但在后续的密码学中又比较重要，入门可以先学学LLL算法的原理）等等等等<br>在网上有很多师傅大佬的博客都写得很全面的，非常值得学习的，大家在学习时遇到新的密码体制或者变体的时候，可以多去网上搜一下学习学习。<br>“在比赛的时候用agent只是为了队伍能在比赛期间拿到分数，往往赛后看wp和复盘才是真正的学习”我相信这句话对哪个方向来说都是适用的。</p>
+<p>也没什么好说的，贴几个大佬的博客吧（感恩）：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://lazzzaro.github.io/2020/05/06/crypto-RSA/">Lazzaro 的 RSA 攻击套路总结</a></li>
+<li><a target="_blank" rel="noopener" href="https://tangcuxiaojikuai.github.io/">糖醋小鸡块的小屋</a></li>
+<li><a target="_blank" rel="noopener" href="https://hasegawaazusa.github.io/">独奏の小屋</a></li>
+<li><a target="_blank" rel="noopener" href="https://hasegawaazusa.github.io/hidden-number-problem.html">Hidden Number Problem 笔记 | 独奏の小屋</a></li>
+<li><a target="_blank" rel="noopener" href="https://dexterjie.github.io/2024/07/29/%E8%83%8C%E5%8C%85%E5%AF%86%E7%A0%81/#%E8%83%8C%E5%8C%85%E5%AF%86%E7%A0%81">背包密码 | DexterJie’s Blog</a></li>
+<li><a target="_blank" rel="noopener" href="https://jayxv.github.io/">Van1sh 的小屋</a></li>
+</ul>
+<p>关于sage：我推荐是用wsl+arch，可以安装新版本的sage<br>哦对了，有挺多的交互题，需要用到pwntools，可以学一下基础怎么用（不难的）</p>
 
                 
               </div>
